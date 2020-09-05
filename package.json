@@ -1,0 +1,48 @@
+{
+  "name": "giving-to-charity-app",
+  "version": "1.0.0",
+  "description": "A platform that fosters an easy donation process of money or materials to accredited and trusted organisations that facilitate social welfare activities",
+  "main": "server.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tboy-AK/giving-to-charity-app.git"
+  },
+  "keywords": [
+    "giving",
+    "donation",
+    "charity",
+    "ngo",
+    "foundation",
+    "initiative"
+  ],
+  "author": "Tobi Akanji",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tboy-AK/giving-to-charity-app/issues"
+  },
+  "homepage": "https://github.com/Tboy-AK/giving-to-charity-app#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^4.5.2",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-react-views": "^0.11.0",
+    "express-validator": "^6.6.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.10.2",
+    "pg": "^8.3.3",
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "react-bootstrap": "^1.3.0",
+    "react-dom": "^16.13.1",
+    "styled-components": "^5.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.8.1",
+    "jasmine": "^3.6.1",
+    "postman-request": "^2.88.1-postman.24"
+  }
+}
