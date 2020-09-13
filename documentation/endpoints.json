@@ -1,0 +1,422 @@
+{
+  "user": [
+    {
+      "url": "/blogs",
+      "method": "GET",
+      "headers": [],
+      "desc": "User can view a list of blogs",
+      "response": {
+        "type": "ARRAY"
+      }
+    },
+    {
+      "url": "/testimonials",
+      "method": "GET",
+      "headers": [],
+      "desc": "User can view a list of testimonials",
+      "response": {
+        "type": "ARRAY"
+      }
+    },
+    {
+      "url": "/banner_needs",
+      "method": "GET",
+      "headers": [],
+      "desc": "User can view a list of top priority needs they can urgently donate to",
+      "response": {
+        "type": "ARRAY"
+      }
+    }
+  ],
+  "donor": [
+    {
+      "url": "/donation_items",
+      "method": "POST",
+      "headers": [],
+      "body": {
+        "parameter": {
+          "items": [
+            {
+              "itemName": "STRING",
+              "desc": "STRING",
+              "quantity": "NUMBER",
+              "purpose": "STRING"
+            }
+          ]
+        }
+      },
+      "desc": "Donor can post donation items",
+      "response": {
+        "type": "ARRAY"
+      }
+    },
+    {
+      "url": "/donations",
+      "method": "POST",
+      "headers": [],
+      "query": [
+        {
+          "causeId": {
+            "type": "INT"
+          }
+        },
+        {
+          "cause_type": {
+            "type": "STRING, ENUM[ngo, event]"
+          }
+        }
+      ],
+      "body": {
+        "parameter": {
+          "items": "ARRAY",
+          "handleBy": "ENUM[donor, ngo]",
+          "email": "STRING",
+          "phone": "STRING",
+          "state": "STRING",
+          "city": "STRING",
+          "address": "STRING",
+          "date": "DATE",
+          "time": "TIME"
+        }
+      },
+      "desc": "Donor can donate to an organisation or event",
+      "response": {
+        "type": "OBJECT"
+      }
+    }
+  ],
+  "ngo": [
+    {
+      "url": "/ngo",
+      "method": "POST",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can register",
+      "response": {
+        "type": "STRING, success message, reference to email"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view its profile",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/events",
+      "method": "POST",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can post an event",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/events",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view a list of all its events",
+      "response": {
+        "type": "ARRAY"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/events/eventId",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view its event in full detail",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/events/eventId/needs",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view the needs of its event",
+      "response": {
+        "type": "ARRAY"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/events/eventId/needs/needId",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view a need of its event in full detail",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/needs",
+      "method": "POST",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can post a need",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/needs",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view a list of all its needs",
+      "response": {
+        "type": "ARRAY"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/needs/needId",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view a need in full detail",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/needs/needId",
+      "method": "PUT",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can update a need",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/needs/needId",
+      "method": "DELETE",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can delete a need",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/events/eventId/donations",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view the donations for its event",
+      "response": {
+        "type": "ARRAY"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/events/eventId/donations/donationId",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view a donation for its event in full detail",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/donations",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view a list of all its donations",
+      "response": {
+        "type": "ARRAY"
+      }
+    },
+    {
+      "url": "/ngo/:ngoId/donations/donationId",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "NGO can view a donation in full detail",
+      "response": {
+        "type": "OBJECT"
+      }
+    }
+  ],
+  "subscriber": [
+    {
+      "url": "/subscriber",
+      "method": "POST",
+      "headers": [],
+      "body": {
+        "parameter": {
+          "email": "STRING"
+        }
+      },
+      "desc": "User can subscribe for news letter",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/subscriber/subscriberId",
+      "method": "DELETE",
+      "headers": [],
+      "body": {
+        "parameter": {
+          "reason": "STRING"
+        }
+      },
+      "desc": "User can unsubscribe from news letter",
+      "response": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "admin": [
+    {
+      "url": "/admin",
+      "method": "GET",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "Admin can view his profile",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/admin/blogs",
+      "method": "POST",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "Admin can post a blog",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/admin/testimonials",
+      "method": "POST",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "Admin can post a testimonial",
+      "response": {
+        "type": "OBJECT"
+      }
+    },
+    {
+      "url": "/admin/banner_needs",
+      "method": "POST",
+      "headers": [
+        {
+          "Authorization": {
+            "type": "STRING, bearer token"
+          }
+        }
+      ],
+      "desc": "Admin can post a top priority need for users to urgently donate to",
+      "response": {
+        "type": "OBJECT"
+      }
+    }
+  ]
+}
