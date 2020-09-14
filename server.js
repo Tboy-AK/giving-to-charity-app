@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
 const express = require('express');
 const { createEngine } = require('express-react-views');
+const logger = require('./utils/winston-logger');
 require('dotenv').config();
 
 // Require routers
@@ -25,5 +25,5 @@ const hostname = process.env.HOSTNAME || 'localhost';
 const port = process.env.PORT || 3000;
 
 module.exports = server.listen(port, () => {
-  console.log(`Listening on ${hostname}:${port}`);
+  logger.info(`Listening on ${hostname}:${port}`);
 });
