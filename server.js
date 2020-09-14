@@ -1,5 +1,8 @@
 const express = require('express');
 const { createEngine } = require('express-react-views');
+const morgan = require('morgan');
+const fs = require('fs');
+const path = require('path');
 const logger = require('./utils/winston-logger');
 require('dotenv').config();
 
@@ -15,6 +18,9 @@ server.set('view engine', 'jsx');
 server.engine('jsx', createEngine());
 
 server.use([urlencoded({ extended: false }), json()]);
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', 'access.log'), { flags: 'a' });
+server.use(morgan('combined', { stream: accessLogStream }));
 
 const version = process.env.VERSION || 'v1.0.0';
 server.use(`/api/${version}`, [
