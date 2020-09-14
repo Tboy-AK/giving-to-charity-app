@@ -90,7 +90,7 @@ const Homepage = ({ title, endpoints }) => {
 
 Homepage.propTypes = {
   title: propTypes.string,
-  endpoints: propTypes.shape(propTypes.object),
+  endpoints: propTypes.shape(),
 };
 
 Homepage.defaultProps = {

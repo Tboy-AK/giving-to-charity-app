@@ -10,18 +10,19 @@ const { urlencoded, json } = express;
 
 const server = express();
 
-const port = process.env.PORT || 3000;
-const hostname = process.env.HOSTNAME || 'localhost';
-
 server.set('views', `${__dirname}/views`);
 server.set('view engine', 'jsx');
 server.engine('jsx', createEngine());
 
 server.use([urlencoded({ extended: false }), json()]);
 
-server.use('/api/v1.0.0', [
+const version = process.env.VERSION || 'v1.0.0';
+server.use(`/api/${version}`, [
   ApiHomeRouter,
 ]);
+
+const hostname = process.env.HOSTNAME || 'localhost';
+const port = process.env.PORT || 3000;
 
 module.exports = server.listen(port, () => {
   console.log(`Listening on ${hostname}:${port}`);
