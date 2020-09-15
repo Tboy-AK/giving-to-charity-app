@@ -111,6 +111,8 @@ A member of the Donations (items) model.
 ## Blogs
 
 - id
+- title
+- content
 - url
 - created_at
 - updated_at
@@ -118,6 +120,7 @@ A member of the Donations (items) model.
 ## BannerNeeds
 
 - id
+- title
 - content
 - img
 - url

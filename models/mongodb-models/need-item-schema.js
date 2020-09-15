@@ -2,7 +2,7 @@ const { mongoose } = require('../../configs/mongodb-config');
 
 const { Schema } = mongoose;
 
-const DonationItemSchema = new Schema({
+const NeedItemSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -22,6 +22,11 @@ const DonationItemSchema = new Schema({
     required: true,
     min: 1,
   },
+  supply: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
   purpose: {
     type: String,
     minlength: 5,
@@ -30,4 +35,4 @@ const DonationItemSchema = new Schema({
   },
 }, { timestamps: true });
 
-module.exports = DonationItemSchema;
+module.exports = NeedItemSchema;

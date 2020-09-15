@@ -9,13 +9,6 @@ const AdminSchema = new Schema({
     unique: true,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    match: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-  },
   firstName: {
     type: String,
     required: true,
