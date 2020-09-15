@@ -21,7 +21,10 @@ server.engine('jsx', createEngine());
 server.use([urlencoded({ extended: false }), json()]);
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', 'access.log'), { flags: 'a' });
-server.use(morgan('combined', { stream: accessLogStream }));
+server.use([
+  morgan('combined'),
+  morgan('combined', { stream: accessLogStream }),
+]);
 
 const version = process.env.VERSION || 'v1.0.0';
 server.use(`/api/${version}`, [

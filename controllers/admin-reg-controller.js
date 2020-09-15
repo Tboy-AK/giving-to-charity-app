@@ -2,7 +2,7 @@
 const { hash, genSaltSync } = require('bcryptjs');
 const { validationResult } = require('express-validator');
 
-const adminsController = (errResponse, AuthModel, AdminModel) => {
+const adminRegController = (errResponse, AuthModel, AdminModel) => {
   const createAdmin = (req, res) => {
     // validate user request data
     const validationError = validationResult(req);
@@ -15,11 +15,12 @@ const adminsController = (errResponse, AuthModel, AdminModel) => {
     const reqBody = req.body;
 
     // hash user password
-    return hash(reqBody.password, genSaltSync(10))
+    const salt = genSaltSync(10);
+    return hash(reqBody.password, salt)
       .then(async (hashString) => {
         // overwrite password with its hash version
         reqBody.password = hashString;
-        reqBody.userType = 'admin';
+        reqBody.role = 'admin';
 
         // save auth data to database
         const newAuth = new AuthModel(reqBody);
@@ -30,12 +31,11 @@ const adminsController = (errResponse, AuthModel, AdminModel) => {
                 return errResponse(res, 403, 'User already exists');
 
               default:
-                return errResponse(res, 500, authErr.message);
+                return errResponse(res, 500, null, authErr);
             }
           }
 
           reqBody.authId = authResult._id;
-          reqBody.registered = true;
 
           // save admin data to database
           const newAdmin = new AdminModel(reqBody);
@@ -46,22 +46,22 @@ const adminsController = (errResponse, AuthModel, AdminModel) => {
                   return errResponse(res, 403, 'User already exists');
 
                 default:
-                  return errResponse(res, 500, adminErr.message);
+                  return errResponse(res, 500, null, adminErr);
               }
             }
 
             return res
               .status(201)
               .json({
-                message: 'Admin account successfully created. Check email to see login details and change password.',
+                message: `Admin account successfully created. Check your email ${authResult.email} to activate your account.`,
               });
           });
         });
       })
-      .catch((err) => errResponse(res, 500, err.message));
+      .catch((err) => errResponse(res, 500, null, err));
   };
 
   return { createAdmin };
 };
 
-module.exports = adminsController;
+module.exports = adminRegController;
