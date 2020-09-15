@@ -9,7 +9,7 @@ const logger = require('./winston-logger');
  */
 
 module.exports = (res, status = 500, message, err) => {
-  logger.error(err.message);
+  if (err) logger.error(err.message);
 
   let errMessage;
   if (message == null) {
