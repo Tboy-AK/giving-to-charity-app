@@ -1,7 +1,7 @@
 const { body, header } = require('express-validator');
 
 const validators = [
-  header('accessTokenPayload')
+  header('useraccesspayload')
     .trim(' ')
     .notEmpty()
     .withMessage('User must be authorized'),

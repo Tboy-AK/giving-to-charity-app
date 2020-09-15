@@ -1,5 +1,5 @@
 const express = require('express');
-// const authAdmin = require('../middleware/auth-admin');
+const authAdmin = require('../middleware/auth-admin');
 const adminRegValidator = require('../middleware/request-validators/admin-reg-validator');
 const errResponse = require('../utils/error-response-handler');
 
@@ -9,6 +9,6 @@ const { createAdmin } = require('../controllers/admin-reg-controller')(errRespon
 
 const AdminRegRouter = express.Router();
 
-AdminRegRouter.post('/admin', adminRegValidator, createAdmin);
+AdminRegRouter.post('/admin', authAdmin, adminRegValidator, createAdmin);
 
 module.exports = { AdminRegRouter };
