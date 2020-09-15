@@ -25,7 +25,7 @@ const AuthSchema = new mongoose.Schema({
     type: String,
     required: true,
     lowercase: true,
-    enum: ['admin', 'ngo'],
+    enum: ['superAdmin', 'admin', 'ngo'],
   },
 }, { timestamps: true });
 const AuthModel = mongoose.model('Auth', AuthSchema);

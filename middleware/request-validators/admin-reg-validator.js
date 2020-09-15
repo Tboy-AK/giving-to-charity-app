@@ -22,7 +22,7 @@ const validators = [
     .trim(' ')
     .notEmpty()
     .withMessage('Password is required')
-    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9a-zA-Z]).{8,24}$/)
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9a-zA-Z]).{8,64}$/)
     .withMessage('Use a strong password')
     .custom((password, { req }) => password === req.body.confirmPassword)
     .withMessage('Passwords must match')

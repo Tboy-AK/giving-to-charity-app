@@ -9,6 +9,7 @@ require('dotenv').config();
 // Require routers
 const { ApiHomeRouter } = require('./routers/api-home-router');
 const { AdminRegRouter } = require('./routers/admin-reg-router');
+const { AuthRouter } = require('./routers/auth-router');
 
 const { urlencoded, json } = express;
 
@@ -30,6 +31,7 @@ const version = process.env.VERSION || 'v1.0.0';
 server.use(`/api/${version}`, [
   ApiHomeRouter,
   AdminRegRouter,
+  AuthRouter,
 ]);
 
 const hostname = process.env.HOSTNAME || 'localhost';
