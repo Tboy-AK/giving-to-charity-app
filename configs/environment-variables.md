@@ -1,0 +1,34 @@
+# Environment Variables
+
+## Environment
+
+- NODE_ENV
+
+## Server
+
+- HOSTNAME
+- PORT
+- VERSION
+
+## Token Secrets
+
+- RSA_PRIVATE_KEY
+
+## MongoDB
+
+- DEV_MONGO_DATABASE_URL
+- TEST_MONGO_DATABASE_URL
+
+## Postgres
+
+- DEV_PG_DATABASE_URL
+- TEST_PG_USER
+- TEST_PG_PASSWORD
+- TEST_PG_HOST
+- TEST_PG_PORT
+- TEST_PG_DATABASE
+
+## e-Mailing Service
+
+- MAILTRAP_SMTP_USERNAME
+- MAILTRAP_SMTP_PASSWORD
