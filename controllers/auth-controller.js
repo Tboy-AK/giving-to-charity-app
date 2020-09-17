@@ -53,7 +53,7 @@ const authController = (errResponse, AuthModel) => {
               secure: false,
               sameSite: 'none',
               httpOnly: false,
-              path: `/api/${version}/auths/session`,
+              path: `/api/${version}/auth/session`,
               domain: req.hostname !== 'localhost' ? `.${req.hostname}` : 'localhost',
             };
 
@@ -62,6 +62,7 @@ const authController = (errResponse, AuthModel) => {
               .header('Authorization', accessToken)
               .cookie('GiveToCharity-Refresh', refreshToken, cookieOptions)
               .json({
+                authId: authResult._id,
                 message: 'Successfully logged in',
                 accessExp: accessTokenOptions.expiresIn,
                 refreshExp: refreshTokenOptions.expiresIn,
