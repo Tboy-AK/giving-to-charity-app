@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const { hash, genSaltSync } = require('bcryptjs');
 const { validationResult } = require('express-validator');
+const mailer = require('../utils/email-handler');
 
 const adminRegController = (errResponse, AuthModel, AdminModel) => {
   const createAdmin = (req, res) => {
@@ -12,7 +13,7 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
     }
 
     // get request data for utilization purposes
-    const reqBody = req.body;
+    const reqBody = { ...req.body };
 
     // hash user password
     const salt = genSaltSync(10);
@@ -50,10 +51,45 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
               }
             }
 
+            const { email } = reqBody;
+            const subject = 'Activate Account';
+            const text = 'Login and change your default password';
+            const html = `
+              <p>
+                Dear Admin,
+              </p>
+              <br/>
+              <p>
+                Congratulations! You are now an Admin at
+                <span style='background-color: gray;'> Give To Charity</span>,
+                 and you are required to change your default password.
+              </p>
+              <br/>
+              <p>
+                Username: ${email}
+              </p>
+              <p>
+                Password: ${req.body.password}
+              </p>
+              <br/>
+              <p>
+                This will last for only 48hrs.
+              </p>
+              <p>
+                Thanks,
+                <br/>
+                The 
+                <span style='background-color: gray;'> Give To Charity</span>
+                 team.
+              </p>
+            `;
+            mailer(email, subject, text, html)
+              .catch(() => null);
+
             return res
               .status(201)
               .json({
-                message: `Admin account successfully created. Check your email ${authResult.email} to activate your account.`,
+                message: `Admin account successfully created. Verify the account at ${email}`,
               });
           });
         });
