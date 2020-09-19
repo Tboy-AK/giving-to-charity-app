@@ -3,8 +3,8 @@ const { hash, genSaltSync } = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const mailer = require('../utils/email-handler');
 
-const adminRegController = (errResponse, AuthModel, AdminModel) => {
-  const createAdmin = (req, res) => {
+const ngoRegController = (errResponse, AuthModel, NGOModel) => {
+  const createNGO = (req, res) => {
     // validate user request data
     const validationError = validationResult(req);
     if (!validationError.isEmpty()) {
@@ -21,8 +21,8 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
       .then(async (hashString) => {
         // overwrite password with its hash version
         reqBody.password = hashString;
-        reqBody.role = 'admin';
-        reqBody.active = true;
+        reqBody.role = 'ngo';
+        reqBody.active = false;
 
         // save auth data to database
         const newAuth = new AuthModel(reqBody);
@@ -30,34 +30,24 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
           .then((authResult) => {
             reqBody.authId = authResult._id;
 
-            // save admin data to database
-            const newAdmin = new AdminModel(reqBody);
-            return newAdmin.save()
+            // save ngo data to database
+            const newNGO = new NGOModel(reqBody);
+            return newNGO.save()
               .then(() => {
                 const { email } = reqBody;
-                const subject = 'Activate Account';
-                const text = 'Login and change your default password';
+                const subject = 'Registered NGO';
+                const text = 'Your registration has been received';
                 const html = `
                   <p>
-                    Dear Admin,
+                    Dear NGO,
                   </p>
                   <br/>
                   <p>
-                    Congratulations! You are now an Admin at
-                    <span style='background-color: gray;'> Give To Charity</span>,
-                    and you are required to change your default password.
+                    Just little time before the final steps are completed!
+                    Please, go through our user guide for NGOs if you have not
+                    while we process your account.
                   </p>
                   <br/>
-                  <p>
-                    Username: ${email}
-                  </p>
-                  <p>
-                    Password: ${req.body.password}
-                  </p>
-                  <br/>
-                  <p>
-                    This will last for only 48hrs.
-                  </p>
                   <p>
                     Thanks,
                     <br/>
@@ -72,23 +62,43 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
                 return res
                   .status(201)
                   .json({
-                    message: `Admin account successfully created. Verify the account at ${email}`,
+                    message: `NGO registration successfully completed. Verify the account at ${email}`,
                   });
               })
-              .catch((adminErr) => {
-                switch (adminErr.code) {
-                  case 11000:
-                    return errResponse(res, 403, 'User already exists');
+              .catch((ngoErr) => {
+                if (ngoErr.code) {
+                  switch (ngoErr.code) {
+                    case 11000:
+                      return errResponse(res, 403, 'User already exists');
+
+                    default:
+                      return errResponse(res, 500, null, ngoErr);
+                  }
+                }
+
+                switch (ngoErr.name) {
+                  case 'ValidationError':
+                    return errResponse(res, 400, ngoErr.message);
 
                   default:
-                    return errResponse(res, 500, null, adminErr);
+                    return errResponse(res, 500, null, ngoErr);
                 }
               });
           })
           .catch((authErr) => {
-            switch (authErr.code) {
-              case 11000:
-                return errResponse(res, 403, 'User already exists');
+            if (authErr.code) {
+              switch (authErr.code) {
+                case 11000:
+                  return errResponse(res, 403, 'User already exists');
+
+                default:
+                  return errResponse(res, 500, null, authErr);
+              }
+            }
+
+            switch (authErr.name) {
+              case 'ValidatorError':
+                return errResponse(res, 400, authErr.message);
 
               default:
                 return errResponse(res, 500, null, authErr);
@@ -98,7 +108,7 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
       .catch((err) => errResponse(res, 500, null, err));
   };
 
-  return { createAdmin };
+  return { createNGO };
 };
 
-module.exports = adminRegController;
+module.exports = ngoRegController;
