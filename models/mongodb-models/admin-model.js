@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const AdminSchema = new Schema({
   authId: {
     type: Schema.Types.ObjectId,
-    ref: 'Auths',
+    ref: 'Auth',
     unique: true,
     required: true,
   },
