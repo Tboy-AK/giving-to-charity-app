@@ -27,6 +27,16 @@ const AuthSchema = new mongoose.Schema({
     lowercase: true,
     enum: ['superAdmin', 'admin', 'ngo'],
   },
+  active: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
+  suspended: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
 }, { timestamps: true });
 const AuthModel = mongoose.model('Auth', AuthSchema);
 
