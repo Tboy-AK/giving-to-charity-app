@@ -11,6 +11,7 @@ const { ApiHomeRouter } = require('./routers/api-home-router');
 const { AdminRegRouter } = require('./routers/admin-reg-router');
 const { AuthRouter } = require('./routers/auth-router');
 const { RefreshAccessRouter } = require('./routers/session-router');
+const { NGORegRouter } = require('./routers/ngo-reg-router');
 
 const { urlencoded, json } = express;
 
@@ -34,6 +35,7 @@ server.use(`/api/${version}`, [
   AdminRegRouter,
   AuthRouter,
   RefreshAccessRouter,
+  NGORegRouter,
 ]);
 
 const hostname = process.env.HOSTNAME || 'localhost';

@@ -40,7 +40,7 @@
 - address
 - cacNumber
 - sdg
-- category
+- category: seems redundant
 - needs
 - created_at
 - updated_at
