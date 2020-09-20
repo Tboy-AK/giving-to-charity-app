@@ -94,22 +94,15 @@ const validators = [
     .withMessage('Zip code must be number greater than 0')
     .escape(),
   body('sdgs')
-    .notEmpty()
-    .withMessage('SDG is required')
     .isArray({ min: 1, max: 5 })
-    .withMessage('SDG must be between 1 and 100 inclusive')
-    .escape(),
+    .withMessage('SDG must be between 1 and 100 inclusive'),
   body('socialMedia')
-    .notEmpty()
-    .withMessage('Social media is required')
     .isArray({ min: 1 })
-    .withMessage('Social media must be at least 1')
-    .escape(),
+    .withMessage('Social media must be at least 1'),
   body('needs')
-    .notEmpty()
+    .optional()
     .isArray({ min: 1 })
-    .withMessage('Needs must have at least 1 item')
-    .escape(),
+    .withMessage('Needs must have at least 1 item'),
 ];
 
 module.exports = validators;
