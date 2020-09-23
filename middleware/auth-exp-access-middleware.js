@@ -16,6 +16,7 @@ const authExpAccess = (req, res, next) => verify(
     }
     req.body.authId = payload.authId;
     req.body.role = payload.aud;
+    req.body.email = payload.email;
 
     switch (payload.aud) {
       case 'superAdmin':

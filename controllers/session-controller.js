@@ -2,8 +2,8 @@
 const { validationResult } = require('express-validator');
 const { sign } = require('jsonwebtoken');
 
-const authController = (errResponse) => {
-  const refreshAccess = (req, res) => {
+const refreshAccessController = (errResponse) => {
+  const refreshAccess = async (req, res) => {
     // validate user request data
     const validationError = validationResult(req);
     if (!validationError.isEmpty()) {
@@ -14,10 +14,8 @@ const authController = (errResponse) => {
     const { authId, email, role } = req.body;
 
     // create user access token
-    const userPayload = {
-      authId,
-      email,
-    };
+    const userPayload = { authId, email };
+
     const accessTokenOptions = {
       algorithm: 'HS256',
       audience: role,
@@ -51,6 +49,8 @@ const authController = (errResponse) => {
       .header('Authorization', accessToken)
       .cookie('GiveToCharity-Refresh', refreshToken, cookieOptions)
       .json({
+        userId: req.query.userId,
+        role,
         message: 'Successfully logged in',
         accessExp: accessTokenOptions.expiresIn,
         refreshExp: refreshTokenOptions.expiresIn,
@@ -60,4 +60,4 @@ const authController = (errResponse) => {
   return { refreshAccess };
 };
 
-module.exports = authController;
+module.exports = refreshAccessController;

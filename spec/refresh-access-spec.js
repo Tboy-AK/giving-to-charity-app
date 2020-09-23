@@ -1,9 +1,9 @@
 const errResponse = require('../utils/error-response-handler');
 const AuthModel = require('../models/mongodb-models/auth-model');
-const { userSignin } = require('../controllers/auth-controller')(errResponse, AuthModel);
+const { refreshAccess } = require('../controllers/session-controller')(errResponse);
 const logger = require('../utils/winston-logger');
 
-describe('POST /api/v1.0.0/auth', () => {
+describe('POST /api/v1.0.0/auth/session', () => {
   const res = {
     status: (statusCode) => ({ statusCode, ...res }),
     header: (params) => ({ ...params, ...res }),
@@ -14,9 +14,11 @@ describe('POST /api/v1.0.0/auth', () => {
 
   describe('when requested', () => {
     const req = {
+      query: { userId: '5f655021d9d4a944c0fe5e4d' },
       body: {
+        authId: '5f655021d9d4a944c0fe5e4d',
         email: 'tester@testmail.com',
-        password: 'Password1234',
+        role: 'admin',
       },
     };
     let resStatusSpy;
@@ -36,7 +38,7 @@ describe('POST /api/v1.0.0/auth', () => {
         }
         resStatusSpy = spyOn(res, 'status').and.callThrough();
         resJSONSpy = spyOn(res, 'json');
-        await userSignin(req, res);
+        await refreshAccess(req, res);
         return done();
       });
     });

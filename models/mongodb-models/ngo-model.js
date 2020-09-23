@@ -6,14 +6,7 @@ const { Schema, model } = mongoose;
 
 class validators {
   /**
-   * @description Checks that array is not empty
-   */
-  static arrayHasContent(val) {
-    return (val.length >= 0);
-  }
-
-  /**
-   * @description Dynamically validates the size range of an array field or attribute
+   * @description Dynamically validates the size range of an array field
    * @param {Number} min minimum length
    * @param {Number} max maximum length
    */
@@ -25,18 +18,13 @@ class validators {
   }
 
   /**
-   * @description Dynamically validates the size range and data type of an array field or attribute
-   * @param {Number} min minimum length
-   * @param {Number} max maximum length
+   * @description Dynamically validates the data type of an array of data
    * @param {SchemaType} Type schema type
    */
-  static arrayLengthRangeAndDataType(min, max, Type) {
-    return (val) => (
-      val.length >= min
-      && val.length <= max
-      && val.every((e) => (
-        Type(e) === e
-      )));
+  static arrayDataType(Type) {
+    return (val) => val.every((e) => (
+      Type(e) === e
+    ));
   }
 }
 
@@ -117,14 +105,7 @@ const NGOSchema = new Schema({
     minlength: 2,
     maxlength: 500,
   },
-  needs: {
-    type: [NeedItemSchema],
-    default: undefined,
-    validate: [
-      validators.arrayHasContent,
-      'NGOs must have at least an item if needs are present',
-    ],
-  },
+  needs: [NeedItemSchema],
   verified: {
     type: Boolean,
     default: false,
@@ -132,10 +113,15 @@ const NGOSchema = new Schema({
   },
 }, { timestamps: true });
 
-NGOSchema.path('sdgs').validate(
-  validators.arrayLengthRangeAndDataType(1, 5, Number),
-  'NGOs must have between 1 and 5 SDGs',
-);
+NGOSchema.path('sdgs')
+  .validate(
+    validators.arrayLengthRange(1, 5),
+    'NGOs must have between 1 and 5 SDGs',
+  )
+  .validate(
+    validators.arrayDataType(Number),
+    'SDGs should be signified by their goal number',
+  );
 
 const NGOModel = model('NGO', NGOSchema);
 

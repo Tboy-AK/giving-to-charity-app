@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const { hash, genSaltSync } = require('bcryptjs');
 const { validationResult } = require('express-validator');
+const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
 
 const adminRegController = (errResponse, AuthModel, AdminModel) => {
@@ -67,7 +68,7 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
                   </p>
                 `;
                 mailer(email, subject, text, html)
-                  .catch(() => null);
+                  .catch((err) => logger.error(err.message));
 
                 return res
                   .status(201)
@@ -75,23 +76,23 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
                     message: `Admin account successfully created. Verify the account at ${email}`,
                   });
               })
-              .catch((adminErr) => {
-                switch (adminErr.code) {
+              .catch((err) => {
+                switch (err.code) {
                   case 11000:
                     return errResponse(res, 403, 'User already exists');
 
                   default:
-                    return errResponse(res, 500, null, adminErr);
+                    return errResponse(res, 500, null, err);
                 }
               });
           })
-          .catch((authErr) => {
-            switch (authErr.code) {
+          .catch((err) => {
+            switch (err.code) {
               case 11000:
                 return errResponse(res, 403, 'User already exists');
 
               default:
-                return errResponse(res, 500, null, authErr);
+                return errResponse(res, 500, null, err);
             }
           });
       })
