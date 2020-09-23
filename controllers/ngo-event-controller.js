@@ -90,7 +90,7 @@ const eventController = (errResponse, NGOModel, EventModel) => {
             if (err.code) {
               switch (err.code) {
                 case 11000:
-                  return errResponse(res, 400, 'Event already exists', err);
+                  return errResponse(res, 400, 'Event already exists');
 
                 default:
                   return errResponse(res, 500, null, err);
