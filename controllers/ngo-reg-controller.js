@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const { hash, genSaltSync } = require('bcryptjs');
 const { validationResult } = require('express-validator');
+const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
 
 const ngoRegController = (errResponse, AuthModel, NGOModel) => {
@@ -57,7 +58,7 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
                   </p>
                 `;
                 mailer(email, subject, text, html)
-                  .catch(() => null);
+                  .catch((err) => logger.error(err.message));
 
                 return res
                   .status(201)

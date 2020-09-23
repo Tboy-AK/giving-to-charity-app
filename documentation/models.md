@@ -50,12 +50,13 @@
 - id
 - eventName
 - desc
-- companyName
+- companyName: companyId
 - country
 - state
 - city
 - zipCode
 - address
+- socialMedia
 - sdg
 - category
 - needs

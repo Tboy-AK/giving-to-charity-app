@@ -26,4 +26,4 @@ mongoose.connect(
 const db = mongoose.connection;
 db.on('error', logger.error.bind(console, 'connection error:'));
 
-module.exports = { mongoose };
+module.exports = { mongoose, db };

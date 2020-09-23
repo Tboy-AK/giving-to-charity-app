@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 const { compare } = require('bcryptjs');
 const { sign } = require('jsonwebtoken');
 
-const authController = (errResponse, AuthModel) => {
+const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
   const userSignin = (req, res) => {
     // validate user request data
     const validationError = validationResult(req);
@@ -25,13 +25,15 @@ const authController = (errResponse, AuthModel) => {
             if (!isPasswordValid) return errResponse(res, 401, 'Incorrect password');
 
             // create user access token
+            const authId = authResult._id;
             const userPayload = {
-              authId: authResult._id,
+              authId,
               email: authResult.email,
             };
+            const userRole = authResult.role;
             const accessTokenOptions = {
               algorithm: 'HS256',
-              audience: authResult.role,
+              audience: userRole,
               expiresIn: 600,
               issuer: 'GiveToCharity',
             };
@@ -57,18 +59,53 @@ const authController = (errResponse, AuthModel) => {
               domain: req.hostname !== 'localhost' ? `.${req.hostname}` : 'localhost',
             };
 
+            let user;
+            let userRoleErr;
+
+            switch (userRole) {
+              case 'admin':
+                user = await AdminModel.findOne({ authId })
+                  .then((admin) => admin)
+                  .catch((err) => {
+                    throw err;
+                  });
+                break;
+
+              case 'ngo':
+                user = await NGOModel.findOne({ authId })
+                  .then((ngo) => ngo)
+                  .catch((err) => {
+                    throw err;
+                  });
+                break;
+
+              default:
+                userRoleErr = new Error('Unrecognised user');
+                userRoleErr.code = 'AuthError';
+                throw userRoleErr;
+            }
+
             return res
               .status(200)
               .header('Authorization', accessToken)
               .cookie('GiveToCharity-Refresh', refreshToken, cookieOptions)
               .json({
-                authId: authResult._id,
+                userId: user._id,
+                role: userRole,
                 message: 'Successfully logged in',
                 accessExp: accessTokenOptions.expiresIn,
                 refreshExp: refreshTokenOptions.expiresIn,
               });
           })
-          .catch((err) => errResponse(res, 500, null, err));
+          .catch((err) => {
+            switch (err.code) {
+              case 'AuthError':
+                return errResponse(res, 403, err.message);
+
+              default:
+                return errResponse(res, 500, null, err);
+            }
+          });
       })
       .catch((err) => errResponse(res, 500, null, err));
   };
