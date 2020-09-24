@@ -6,7 +6,7 @@ const adminAuth1Id = Types.ObjectId();
 const adminAuthsData = [
   {
     _id: adminAuth1Id,
-    email: 'adminseeder@gmail.com',
+    email: 'joefrank@gmail.com',
     phone: '+2348012345678',
     password: 'Password1234',
     role: 'admin',

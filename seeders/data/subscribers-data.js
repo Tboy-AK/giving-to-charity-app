@@ -6,7 +6,7 @@ const subscriber1Id = Types.ObjectId();
 const subscribersData = [
   {
     _id: subscriber1Id,
-    email: 'subscriberseeder@gmail.com',
+    email: 'danfritzby@gmail.com',
     ngos: [id1],
     sdgs: [1, 2, 3, 4],
   },

@@ -6,7 +6,7 @@ const ngoAuth1Id = Types.ObjectId();
 const ngoAuthsData = [
   {
     _id: ngoAuth1Id,
-    email: 'ngoseeder1@gmail.com',
+    email: 'childdreamsfoundation@gmail.com',
     phone: '+2348012345679',
     password: 'Password1234',
     role: 'ngo',

@@ -7,23 +7,23 @@ const ngosData = [
   {
     _id: ngo1Id,
     authId: id1,
-    name: 'Test Event 1.0',
-    mission: 'To promote the seamless testing of this app',
-    vision: 'A well tested API without unnecessary future stress',
-    website: 'https://give-to-charity.herokuapp.com',
+    name: 'Child Dreams Foundation',
+    mission: 'To promote the creativity in children all around the world',
+    vision: 'A world where everyone is appreciated and can contribute to world wellness effectively and actively',
+    website: 'https://childdreamsfoundation.com',
     cacNumber: '100283',
     sdgs: [1, 2, 3, 4],
     socialMedia: [
       {
         name: 'Twitter',
-        url: 'https://twitter.com/NazaAgape',
+        url: 'https://twitter.com/childdreamsfoundation',
       },
     ],
     country: 'Nigeria',
     state: 'Lagos',
     city: 'Agege',
     zipCode: 100283,
-    address: 'Agege Stadium',
+    address: 'Agege Stadium, off Agege Local Govt., Agege-Ogba, Lagos.',
     needs: [
       {
         name: 'Notebooks',

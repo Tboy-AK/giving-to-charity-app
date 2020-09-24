@@ -7,8 +7,8 @@ const adminsData = [
   {
     _id: admin1Id,
     authId: id1,
-    firstName: 'adminseeder@gmail.com',
-    lastName: '+2348012345678',
+    firstName: 'Joe',
+    lastName: 'Frank',
   },
 ];
 
