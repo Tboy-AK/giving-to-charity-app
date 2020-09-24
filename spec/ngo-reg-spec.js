@@ -144,7 +144,7 @@ describe('POST /api/v1.0.0/ngo', () => {
     });
   });
 
-  describe('when requested with wrong data type', () => {
+  describe('when requested with wrong data type in SDGs field', () => {
     const req = {
       body: {
         email: 'ngt@testmail.com',
@@ -189,7 +189,7 @@ describe('POST /api/v1.0.0/ngo', () => {
     });
   });
 
-  describe('when requested with wrong data type', () => {
+  describe('when requested with wrong data type in zip code field', () => {
     const req = {
       body: {
         email: 'ngt@testmail.com',
@@ -204,7 +204,7 @@ describe('POST /api/v1.0.0/ngo', () => {
         city: 'Agege',
         address: 'Ijaiye MHE, off Agege Stadium, Agege-Ogba, Lagos, Nigeria.',
         cacNumber: '100283',
-        zipCode: 100283,
+        zipCode: 'A100283',
         sdgs: [1, 4],
         socialMedia: [{ name: 'Twitter', url: 'https://twitter.com/SNurturing' }],
         needs: [{ name: 1 }],

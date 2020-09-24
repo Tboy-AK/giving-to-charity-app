@@ -1,11 +1,15 @@
 const winston = require('winston');
+require('dotenv').config();
 
 const newDate = new Date();
 
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
-  defaultMeta: { timeStamp: `${newDate.toLocaleString()} ${newDate.getMilliseconds()}` },
+  defaultMeta: {
+    timeStamp: `${newDate.toLocaleString()} ${newDate.getMilliseconds()}`,
+    env: process.env.NODE_ENV,
+  },
   transports: [
     //
     // - Write all logs with level `error` and below to `error.log`

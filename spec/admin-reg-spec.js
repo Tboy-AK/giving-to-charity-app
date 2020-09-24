@@ -2,7 +2,6 @@ const errResponse = require('../utils/error-response-handler');
 const AuthModel = require('../models/mongodb-models/auth-model');
 const AdminModel = require('../models/mongodb-models/admin-model');
 const { createAdmin } = require('../controllers/admin-reg-controller')(errResponse, AuthModel, AdminModel);
-const logger = require('../utils/winston-logger');
 
 describe('POST /api/v1.0.0/admin', () => {
   const res = {
@@ -11,11 +10,11 @@ describe('POST /api/v1.0.0/admin', () => {
     send: (message) => ({ message, ...res }),
   };
 
-  describe('when requested', () => {
+  describe('when requested for a new admin', () => {
     const req = {
       body: {
         email: 'tester@testmail.com',
-        phone: '+2348028108284',
+        phone: '+2348028108283',
         password: 'Password1234',
         firstName: 'Tester',
         lastName: 'Tester',
@@ -47,37 +46,23 @@ describe('POST /api/v1.0.0/admin', () => {
   });
 
   describe('when requested with an existing email', () => {
-    const authDoc = {
-      email: 'tester@testmail.com',
-      password: '$2a$10$G/9RoxTzUdber2oLIgaFW.4enyOUC.Pbx.0OdGN2n2oVT00txY7gm',
-      phone: '+2348028108284',
-      role: 'admin',
-    };
     const req = {
       body: {
-        email: 'tester@testmail.com',
-        phone: '+2348028108284',
+        email: 'joefrank@gmail.com',
+        phone: '+2348012345678',
         password: 'Password1234',
-        firstName: 'Tester',
-        lastName: 'Tester',
+        firstName: 'Joe',
+        lastName: 'Frank',
       },
     };
     let resStatusSpy;
     let resSendSpy;
 
     beforeAll(async (done) => {
-      const authModel = new AuthModel(authDoc);
-      authModel.save()
-        .then(async () => {
-          resStatusSpy = spyOn(res, 'status').and.callThrough();
-          resSendSpy = spyOn(res, 'send');
-          await createAdmin(req, res);
-          done();
-        })
-        .catch((err) => {
-          logger.error(err.message);
-          return done();
-        });
+      resStatusSpy = spyOn(res, 'status').and.callThrough();
+      resSendSpy = spyOn(res, 'send');
+      await createAdmin(req, res);
+      done();
     });
 
     afterAll(async (done) => {

@@ -3,8 +3,6 @@ const { mongoose } = require('../../configs/mongodb-config');
 const SDGSchema = new mongoose.Schema({
   _id: {
     type: Number,
-    required: true,
-    unique: true,
     min: 1,
     max: 20,
   },

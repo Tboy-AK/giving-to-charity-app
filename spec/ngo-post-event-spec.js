@@ -11,48 +11,22 @@ describe('POST /api/v1.0.0/ngo/:ngoId/event', () => {
     send: (message) => ({ message, ...res }),
   };
 
-  const ngoDoc = {
-    name: 'Nuruturing God\'s Treasures',
-    mission: 'Raising the genius in the African',
-    vision: 'We see an Africa where chidren grow up to be higly incomparable to their peers',
-    website: 'http://ngt-web-develop.herokuapp.com/',
-    country: 'Nigeria',
-    state: 'Lagos',
-    city: 'Agege',
-    address: 'Ijaiye MHE, off Agege Stadium, Agege-Ogba, Lagos, Nigeria.',
-    cacNumber: '100283',
-    zipCode: 100283,
-    sdgs: [1, 4],
-    socialMedia: [{ name: 'Twitter', url: 'https://twitter.com/SNurturing' }],
-    needs: [{ name: 'Loudspeaker' }],
-    authId: '5f6785c2e534dc40940dd4d7',
-  };
-
   let ngoId;
 
   beforeAll(async (done) => {
-    const ngoModel = new NGOModel(ngoDoc);
-    ngoModel.save()
-      .then((ngo) => {
-        // eslint-disable-next-line no-underscore-dangle
-        ngoId = ngo._id;
-        return done();
-      })
-      .catch((err) => {
-        logger.error(err.message);
-        return done();
-      });
-  });
-
-  afterAll(async (done) => {
-    NGOModel.deleteOne({ name: ngoDoc.name }, () => done());
+    NGOModel.findOne({ name: 'Child Dreams Foundation' }, '_id', async (err, doc) => {
+      if (err) throw err;
+      // eslint-disable-next-line no-underscore-dangle
+      else ngoId = await doc._id;
+      done();
+    });
   });
 
   describe('when requested with all appropriate details', () => {
     const req = {
       headers: {
         useraccesspayload: {
-          email: 'testngo@testmail.com',
+          email: 'childdreamsfoundation@gmail.com',
         },
       },
       params: { ngoId },
@@ -121,7 +95,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/event', () => {
     const req = {
       headers: {
         useraccesspayload: {
-          email: 'testngo@testmail.com',
+          email: 'childdreamsfoundation@testmail.com',
         },
       },
       params: { ngoId },
@@ -177,7 +151,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/event', () => {
     const req = {
       headers: {
         useraccesspayload: {
-          email: 'testngo@testmail.com',
+          email: 'childdreamsfoundation@testmail.com',
         },
       },
       params: { ngoId },
@@ -246,7 +220,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/event', () => {
     const req = {
       headers: {
         useraccesspayload: {
-          email: 'testngo@testmail.com',
+          email: 'childdreamsfoundation@testmail.com',
         },
       },
       params: { ngoId },
