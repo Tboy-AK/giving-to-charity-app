@@ -3,6 +3,7 @@ const { hash, genSaltSync } = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
+const htmlWrapper = require('../utils/html-wrapper');
 
 const adminRegController = (errResponse, AuthModel, AdminModel) => {
   const createAdmin = (req, res) => {
@@ -38,7 +39,7 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
                 const { email } = reqBody;
                 const subject = 'Activate Account';
                 const text = 'Login and change your default password';
-                const html = `
+                const htmlBody = `
                   <p>
                     Dear Admin,
                   </p>
@@ -67,6 +68,7 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
                     team.
                   </p>
                 `;
+                const html = htmlWrapper(htmlBody, 'Admin Registration');
                 mailer(email, subject, text, html)
                   .catch((err) => logger.error(err.message));
 

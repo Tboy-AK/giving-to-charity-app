@@ -2,6 +2,7 @@
 const { validationResult } = require('express-validator');
 const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
+const htmlWrapper = require('../utils/html-wrapper');
 
 const eventController = (errResponse, NGOModel, EventModel) => {
   const createEvent = async (req, res) => {
@@ -33,42 +34,42 @@ const eventController = (errResponse, NGOModel, EventModel) => {
             });
 
             const domain = `https://${process.env.DOMAIN}`;
-            const api = `https://${process.env.DOMAIN}/api/${process.env.VERSION}`;
 
             // Notify NGO via email
             {
               const { email } = req.headers.useraccesspayload;
               const subject = 'New Event';
               const text = `A new event titled "${reqBody.name}" has been created on your account`;
-              const html = `
-              <p>
-                Dear ${ngoResult.name},
-              </p>
-              <br/>
-              <p>
-                A new event titled
-                <span style='font-weight: 700;'> "${reqBody.name}" </span>
-                has been created on your account. Confirm this 
-                <a href='${api}/ngo/${req.params.ngoId}/event/${resNGOEvent._id}'>
-                  here
-                </a>.
-                If this wasn't you, please retract and report to the 
-                <a href='${api}/support'>
-                  support
-                </a>
-                 team, else, you're good to go.
-              </p>
-              <br/>
-              <p>
-                Thanks,
+              const htmlBody = `
+                <p>
+                  Dear ${ngoResult.name},
+                </p>
                 <br/>
-                The  
-                <a href='${domain}' style='font-size: 2rem;'>
-                  Give To Charity
-                </a>
-                 team.
-              </p>
-            `;
+                <p>
+                  A new event titled
+                  <span style='font-weight: 700;'> "${reqBody.name}" </span>
+                  has been created on your account. Confirm this 
+                  <a href='${domain}/ngo/${req.params.ngoId}/event/${resNGOEvent._id}'>
+                    here
+                  </a>.
+                  If this wasn't you, please retract and report to the 
+                  <a href='${domain}/support'>
+                    support
+                  </a>
+                  team, else, you're good to go.
+                </p>
+                <br/>
+                <p>
+                  Thanks,
+                  <br/>
+                  The  
+                  <a href='${domain}' style='font-size: 2rem;'>
+                    Give To Charity
+                  </a>
+                  team.
+                </p>
+              `;
+              const html = htmlWrapper(htmlBody, 'Event Creation');
               mailer(email, subject, text, html)
                 .catch((err) => logger.error(err.message));
             }

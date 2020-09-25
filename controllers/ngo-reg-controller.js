@@ -3,6 +3,7 @@ const { hash, genSaltSync } = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
+const htmlWrapper = require('../utils/html-wrapper');
 
 const ngoRegController = (errResponse, AuthModel, NGOModel) => {
   const createNGO = (req, res) => {
@@ -38,7 +39,7 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
                 const { email } = reqBody;
                 const subject = 'Registered NGO';
                 const text = 'Your registration has been received';
-                const html = `
+                const htmlBody = `
                   <p>
                     Dear NGO,
                   </p>
@@ -57,6 +58,7 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
                     team.
                   </p>
                 `;
+                const html = htmlWrapper(htmlBody, 'NGO Registration');
                 mailer(email, subject, text, html)
                   .catch((err) => logger.error(err.message));
 
