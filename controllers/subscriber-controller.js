@@ -50,7 +50,8 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
               )
               .limit(10)
               .populate('ngoId', 'name');
-            ngoEvents.push(ngoEventsByNGOs);
+
+            if (ngoEventsByNGOs && ngoEventsByNGOs.length > 0) ngoEvents.push(ngoEventsByNGOs);
           }
 
           // Get list of events by the list of SDGs specified by the user
@@ -63,8 +64,11 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
             )
             .limit(10)
             .populate('ngoId', 'name');
-          ngoEvents.push(ngoEventsBySDG);
-        } else if (ngoIds && ngoIds.length > 0) {
+
+          if (ngoEventsBySDG && ngoEventsBySDG.length > 0) ngoEvents.push(ngoEventsBySDG);
+        }
+
+        if (ngoIds && ngoIds.length > 0) {
         // Get list of events by the list of NGOs specified by the user
           const ngoEventsByRequestNGOs = await EventModel
             .find(
@@ -75,9 +79,11 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
             )
             .limit(10)
             .populate('ngoId', 'name');
-          ngoEvents.push(ngoEventsByRequestNGOs);
-        } else {
-          return errResponse(res, 400, 'At least NGOs or SDGs must be specified');
+
+          if (
+            ngoEventsByRequestNGOs
+            && ngoEventsByRequestNGOs.length > 0
+          ) ngoEvents.push(ngoEventsByRequestNGOs);
         }
 
         // Send email notification to the new subscriber
@@ -87,54 +93,59 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
           .map(({
             _id, ngoId, desc, name, dateTime,
           }) => {
-            const [date, time] = dateTime.split('T');
-            return (`<article class='Card'>
-              <p>${name}</p>
-              <p><a href='${domain}/ngos/${ngoId}/events/${_id}'>
-                ${domain}/ngos/${ngoId}/events/${_id}
-              </a></p>
-              <p>
-                <span style='margin-right: 3em;'>${date}</span>
-                <span>${time}</span>
-              </p>
-              <p>${desc}</p>
+            const [date, time] = dateTime.toJSON().split('T');
+            return (`<article class='card'>
+              <div class='card-body'>
+                <h5 class='card-title'>${name}</h5>
+                <h6 class='card-subtitle mb-2 text-muted'>
+                  <time datetime='${date}' class='badge badge-secondary' style='margin-right: 3em;'>${date}</time>
+                  <time datetime='${time.replace('Z', '')}' class='badge badge-secondary'>${time}</time>
+                </h6>
+                <p><a href='${domain}/ngos/${ngoId._id}/events/${_id}' class='card-link'>
+                  ${domain}/ngos/${ngoId._id}/events/${_id}
+                </a></p>
+                <p class='card-text'>${desc}</p>
+              </div>
             </article>`);
           }).join('')).join('');
+        const htmlFooter = `
+          <p>
+            Cheers,
+            <br/>
+            The 
+            <span style='background-color: gray;'> Give To Charity</span>
+            team.
+          </p>
+        `;
 
         const { email } = reqBody;
         const subject = 'Latest Charity Subscriber';
         const text = 'Guess who\'s our latest subscriber!';
         const htmlBody = `
-          <section class='Intro'>
-            <p>
-              Dear Subscriber,
-            </p>
-            <br/>
-            <p>
-              Congratulations! You can now receive unhindered updates on activities regarding your choice interests as indicated on our website at 
-              <a href='${domain}#subscribe' style='font-size: 2rem;'>
-                Give To Charity
-              </a>.
-            </p>
-            <br/>
-            <p>
-              Cheers,
+          <main class='container'>
+            <section class='Intro container'>
+              <p>
+                Dear Subscriber,
+              </p>
               <br/>
-              The 
-              <span style='background-color: gray;'> Give To Charity</span>
-              team.
-            </p>
-          </section>
-          <section class='News'>
-            <section class='Events'>
-              <h2>
-                Below are some news you may be interested in
-              </h2>
-              ${eventHTMLArticles}
+              <p>
+                Congratulations! You can now receive unhindered updates on activities regarding your choice interests as indicated on our website at 
+                <a href='${domain}#subscribe'>
+                  Give To Charity
+                </a>.
+              </p>
             </section>
-          </section>
+            ${ngoEvents.length > 0 ? `<section class='News container'>
+              <section class='Events container'>
+                <h2>
+                  Below are some news you may be interested in
+                </h2>
+                ${eventHTMLArticles}
+              </section>
+            </section>` : ''}
+          </main>
         `;
-        const html = htmlWrapper(htmlBody, 'Subscription');
+        const html = htmlWrapper(htmlBody, 'Subscription', htmlFooter);
         mailer(email, subject, text, html)
           .catch((err) => logger.error(err.message));
 
@@ -146,7 +157,25 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
             This does not prevent you from adding more things that interest you here`,
           });
       })
-      .catch((err) => errResponse(res, 500, null, err));
+      .catch((err) => {
+        if (err.code) {
+          switch (err.code) {
+            case 11000:
+              return errResponse(res, 400, 'You\'re already a subscriber to this platform');
+
+            default:
+              return errResponse(res, 500, null, err);
+          }
+        }
+
+        switch (err.name) {
+          case 'ValidationError':
+            return errResponse(res, 400, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
   };
 
   return { createSubscriber };

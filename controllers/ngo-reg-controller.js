@@ -36,20 +36,7 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
             const newNGO = new NGOModel(reqBody);
             return newNGO.save()
               .then(() => {
-                const { email } = reqBody;
-                const subject = 'Registered NGO';
-                const text = 'Your registration has been received';
-                const htmlBody = `
-                  <p>
-                    Dear NGO,
-                  </p>
-                  <br/>
-                  <p>
-                    Just little time before the final steps are completed!
-                    Please, go through our user guide for NGOs if you have not
-                    while we process your account.
-                  </p>
-                  <br/>
+                const htmlFooter = `
                   <p>
                     Thanks,
                     <br/>
@@ -58,7 +45,23 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
                     team.
                   </p>
                 `;
-                const html = htmlWrapper(htmlBody, 'NGO Registration');
+                const { email } = reqBody;
+                const subject = 'Registered NGO';
+                const text = 'Your registration has been received';
+                const htmlBody = `
+                  <main class='container'>
+                    <p>
+                      Dear NGO,
+                    </p>
+                    <br/>
+                    <p>
+                      Just little time before the final steps are completed!
+                      Please, go through our user guide for NGOs if you have not
+                      while we process your account.
+                    </p>
+                  </main>
+                `;
+                const html = htmlWrapper(htmlBody, 'NGO Registration', htmlFooter);
                 mailer(email, subject, text, html)
                   .catch((err) => logger.error(err.message));
 

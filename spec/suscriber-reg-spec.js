@@ -11,7 +11,49 @@ describe('POST /api/v1.0.0/ngo', () => {
     send: (message) => ({ message, ...res }),
   };
 
-  fdescribe('when requested with all appropriate details', () => {
+  let ngoId;
+
+  beforeAll(async (done) => {
+    NGOModel.findOne({ name: 'Child Dreams Foundation' }, '_id', async (err, doc) => {
+      if (err) throw err;
+      // eslint-disable-next-line no-underscore-dangle
+      else ngoId = doc._id;
+      done();
+    });
+  });
+
+  describe('when requested with all appropriate details', () => {
+    const req = {
+      body: {
+        email: 'subtester@testmail.com',
+        sdgs: [1, 4],
+        ngos: [ngoId],
+      },
+    };
+    let resStatusSpy;
+    let resJSONSpy;
+
+    beforeAll(async (done) => {
+      req.body.ngos[0] = await ngoId;
+      resStatusSpy = spyOn(res, 'status').and.callThrough();
+      resJSONSpy = spyOn(res, 'json');
+      await createSubscriber(req, res);
+      done();
+    });
+
+    afterAll(async (done) => {
+      SubscriberModel.deleteOne({ email: req.body.email }, () => done());
+    });
+
+    it('responds status 201', () => {
+      expect(resStatusSpy).toHaveBeenCalledWith(201);
+    });
+    it('responds with a JSON data', () => {
+      expect(resJSONSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('when requested without NGOs', () => {
     const req = {
       body: {
         email: 'subtester@testmail.com',
@@ -22,6 +64,36 @@ describe('POST /api/v1.0.0/ngo', () => {
     let resJSONSpy;
 
     beforeAll(async (done) => {
+      resStatusSpy = spyOn(res, 'status').and.callThrough();
+      resJSONSpy = spyOn(res, 'json');
+      await createSubscriber(req, res);
+      done();
+    });
+
+    afterAll(async (done) => {
+      SubscriberModel.deleteOne({ email: req.body.email }, () => done());
+    });
+
+    it('responds status 201', () => {
+      expect(resStatusSpy).toHaveBeenCalledWith(201);
+    });
+    it('responds with a JSON data', () => {
+      expect(resJSONSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('when requested without SDGs', () => {
+    const req = {
+      body: {
+        email: 'subtester@testmail.com',
+        ngos: [ngoId],
+      },
+    };
+    let resStatusSpy;
+    let resJSONSpy;
+
+    beforeAll(async (done) => {
+      req.body.ngos[0] = await ngoId;
       resStatusSpy = spyOn(res, 'status').and.callThrough();
       resJSONSpy = spyOn(res, 'json');
       await createSubscriber(req, res);
