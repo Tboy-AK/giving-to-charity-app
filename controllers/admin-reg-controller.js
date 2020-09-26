@@ -3,6 +3,7 @@ const { hash, genSaltSync } = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
+const htmlWrapper = require('../utils/html-wrapper');
 
 const adminRegController = (errResponse, AuthModel, AdminModel) => {
   const createAdmin = (req, res) => {
@@ -35,30 +36,7 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
             const newAdmin = new AdminModel(reqBody);
             return newAdmin.save()
               .then(() => {
-                const { email } = reqBody;
-                const subject = 'Activate Account';
-                const text = 'Login and change your default password';
-                const html = `
-                  <p>
-                    Dear Admin,
-                  </p>
-                  <br/>
-                  <p>
-                    Congratulations! You are now an Admin at
-                    <span style='background-color: gray;'> Give To Charity</span>,
-                    and you are required to change your default password.
-                  </p>
-                  <br/>
-                  <p>
-                    Username: ${email}
-                  </p>
-                  <p>
-                    Password: ${req.body.password}
-                  </p>
-                  <br/>
-                  <p>
-                    This will last for only 48hrs.
-                  </p>
+                const htmlFooter = `
                   <p>
                     Thanks,
                     <br/>
@@ -67,6 +45,34 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
                     team.
                   </p>
                 `;
+                const { email } = reqBody;
+                const subject = 'Activate Account';
+                const text = 'Login and change your default password';
+                const htmlBody = `
+                  <main class='container'>
+                    <p>
+                      Dear Admin,
+                    </p>
+                    <br/>
+                    <p>
+                      Congratulations! You are now an Admin at
+                      <span style='background-color: gray;'> Give To Charity</span>,
+                      and you are required to change your default password.
+                    </p>
+                    <br/>
+                    <p>
+                      Username: ${email}
+                    </p>
+                    <p>
+                      Password: ${req.body.password}
+                    </p>
+                    <br/>
+                    <p>
+                      This will last for only 48hrs.
+                    </p>
+                  <main>
+                `;
+                const html = htmlWrapper(htmlBody, 'Admin Registration', htmlFooter);
                 mailer(email, subject, text, html)
                   .catch((err) => logger.error(err.message));
 
