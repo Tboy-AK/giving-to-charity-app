@@ -10,6 +10,7 @@ before_script:
 env:
   global:
     - NODE_ENV=test
+    - TEST_MONGO_DATABASE_URL=mongodb://travis:test@localhost/test_give_to_charity_app
     - PORT=3000
     - HOSTNAME=localhost
     - VERSION=v1.0.0
