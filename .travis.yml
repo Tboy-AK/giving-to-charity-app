@@ -1,0 +1,31 @@
+language: node_js
+node_js:
+  - node
+cache: npm
+services:
+  - mongodb
+before_script:
+  - sleep 15
+  - mongo mydb_test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
+env:
+  global:
+    - NODE_ENV=test
+    - TEST_MONGO_DATABASE_URL=mongodb://127.0.0.1/test_give_to_charity_app
+    - PORT=3000
+    - HOSTNAME=localhost
+    - VERSION=v1.0.0
+    - DOMAIN=localhost:3000
+    - SMTP_HOST=smtp.mailtrap.io
+    - SMTP_PORT=2525
+    - secure: "fRK9F0O/4V5ArUpByP0BVuQ3wl3ld9IWKb03HnbueyGsiw5asK6PnfLNjh4Zrg7I1meZvXAIgjGa4/xzrxIXt2VafKx/Y9z/rBtKxiTu9vBnrOgNMW2UU2vPDPqWUWf1OBeNYMHACWl9uQx3X52IvpaOWt586xr9NwrlqFcjmjkJMSiYttCpbANPSNevTYOKyeqMcJi7Eymeu0fUQSImtaZ3KjC01LQy9UefYSmiQyDZXX2WWWQRe6QDmtjUe7Nd2Dm5UOz/ezpmzDpZ8IEMJOGklmBA+vf+3TgkFVN4tV2n3W/pgZVTPQ2cPMvkTQGi+2QdL5mSRwcxJJbr72mwuO/w11uc/g7kZyyqA2htqEThPw5qYQ8gFqtvfEg7w9jiqlzTlFrKVBEGZ1rijCeTEnvrJvNZegSugmub45ejFOXphGiHzwDdl54oNtpfKmfpfxcPufZd5zJDhkDTvhHvvxra0sRG7pPa7XwmSrjfftHypCb5wnSIS1Gfb+Wxnh85jQnQGelTQ+8LKuYrjqcYZY6SYiXBjCN77KmCjfnOKVQPzE8ivYjC78lJaEbUvSXpjUdcWI5TCud4NASdka/DyNIiXChgIx0Eu8zNEeO5H6v0/YzqaH60msk8S7XbxtrvWk+NuyN/05Yq8t+liObgch8bm2ksiRtThPZJcl/gtt4="
+script:
+  - npm test
+deploy:
+  - cleanup: false
+    provider: heroku
+    api_key:
+      secure: "lP20HfNdyPpmujwqSMgBViidd7XQ6vmAFgxXy7lFVbc8SJyOb/sWCV7nQ8/tOpr5t4y/qBvXW8gRhfomus20qCSuxJCdRaLs72bPVEKp1R16hpdbRZ0kvxVsXxcO3X9gfe2cvmxYXAbaNZHeLynjaGvUuFczaO0SgwdLDhDkceiD0FJbA71OKOJUHq7RzDBMi/RELuT9Rz843B/YzLzUnUzp/jxPq0+TZz3GmrxKjReNs4dynoTaPGU7OG5UL6dMClwdOXlrUnEacavrQwpnEOcv0JMR83QNT8h0GOu95CKYDkNQxUAkyqZiD4hxuK7Y5LCj0L++is8Rv6KUtj+OqZogr/4BYdvICj8N5aFDqLe9qxluUArTJs33/pyPaafI9LExnr+2E8E7kWiMjvZWWpHLBwhazIRrkRCU5vZ/Wr8n003h5YUV5lpzPqkMqQQ7N/NlcfU9F+ISZ9C3OBAFoN757AVcwaDrhFzj6sohmbmvC/lymJPAChRPbCI4PaWxyAAMUR6dpTz97nTNLlTcF4gxTg+2/m1rBxflsXO6rOVBB7AbEoB8X4lSiJEmMgOyVihxTwqu+Ndg3IBaMSun2UrKqsb52+6XU5F5TjOeRonbcnicla7qQCqcUzrb7YUisDEc4hix4QFXik7V3mXypz1aJR559DfY06YnCL1gtCE="
+    app: sua-charity-api
+    on:
+      repo: Tboy-AK/giving-to-charity-app
+      branch: develop
