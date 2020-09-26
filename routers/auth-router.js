@@ -1,4 +1,4 @@
-const express = require('express');
+const { Router } = require('express');
 const authValidator = require('../middleware/request-validators/auth-validator');
 const errResponse = require('../utils/error-response-handler');
 
@@ -9,7 +9,7 @@ const { userSignin } = require('../controllers/auth-controller')(
   errResponse, AuthModel, { AdminModel, NGOModel },
 );
 
-const AuthRouter = express.Router();
+const AuthRouter = Router();
 
 AuthRouter.post('/auth', authValidator, userSignin);
 

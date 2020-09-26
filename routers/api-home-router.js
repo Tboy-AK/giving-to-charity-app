@@ -1,8 +1,8 @@
-const express = require('express');
+const { Router } = require('express');
 const authAdmin = require('../middleware/auth-admin');
 const { apiNavs } = require('../controllers/api-home-controller')();
 
-const ApiHomeRouter = express.Router();
+const ApiHomeRouter = Router();
 
 ApiHomeRouter.get('/', authAdmin, apiNavs);
 

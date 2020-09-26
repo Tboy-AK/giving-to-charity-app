@@ -29,9 +29,7 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
         // Get list of NGOs by the specified SDGs
           const ngosByRequestSDGs = await NGOModel
             .find(
-              {
-                sdgs: { $in: sdgs },
-              },
+              { sdgs: { $in: sdgs } },
               '_id name ngoId desc sdgs address website needs',
             );
 
@@ -48,6 +46,7 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
                 },
                 '_id name ngoId desc sdg dateTime venue website needs',
               )
+              .where('dateTime').gt(Date.now())
               .limit(10)
               .populate('ngoId', 'name');
 
@@ -57,11 +56,10 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
           // Get list of events by the list of SDGs specified by the user
           const ngoEventsBySDG = await EventModel
             .find(
-              {
-                sdg: { $in: sdgs },
-              },
+              { sdg: { $in: sdgs } },
               '_id name desc sdg dateTime venue website needs',
             )
+            .where('dateTime').gt(Date.now())
             .limit(10)
             .populate('ngoId', 'name');
 
@@ -72,17 +70,15 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
         // Get list of events by the list of NGOs specified by the user
           const ngoEventsByRequestNGOs = await EventModel
             .find(
-              {
-                ngoId: { $in: ngoIds },
-              },
+              { ngoId: { $in: ngoIds } },
               '_id name ngoId desc sdg dateTime venue website needs',
             )
+            .where('dateTime').gt(Date.now())
             .limit(10)
             .populate('ngoId', 'name');
 
           if (
-            ngoEventsByRequestNGOs
-            && ngoEventsByRequestNGOs.length > 0
+            ngoEventsByRequestNGOs && ngoEventsByRequestNGOs.length > 0
           ) ngoEvents.push(ngoEventsByRequestNGOs);
         }
 
