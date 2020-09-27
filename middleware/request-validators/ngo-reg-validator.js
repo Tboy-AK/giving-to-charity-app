@@ -24,6 +24,7 @@ const validators = [
     .withMessage('Passwords must match')
     .escape(),
   body('name')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Name is required')
@@ -31,6 +32,7 @@ const validators = [
     .withMessage('Name must be between 10 and 100 characters inclusive')
     .escape(),
   body('mission')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Mission number is required')
@@ -38,6 +40,7 @@ const validators = [
     .withMessage('Mission must be between 10 and 255 characters inclusive')
     .escape(),
   body('vision')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Vision is required')
@@ -45,6 +48,7 @@ const validators = [
     .withMessage('Vision must be between 10 and 255 characters inclusive')
     .escape(),
   body('website')
+    .isURL()
     .trim(' ')
     .notEmpty()
     .withMessage('Website is required')
@@ -52,6 +56,7 @@ const validators = [
     .withMessage('Website must be between 12 and 255 characters inclusive')
     .escape(),
   body('country')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Country is required')
@@ -59,6 +64,7 @@ const validators = [
     .withMessage('Country must be between 2 and 50 characters inclusive')
     .escape(),
   body('state')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('State is required')
@@ -66,6 +72,7 @@ const validators = [
     .withMessage('State must be between 2 and 50 characters inclusive')
     .escape(),
   body('city')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('City is required')
@@ -73,6 +80,7 @@ const validators = [
     .withMessage('City must be between 2 and 50 characters inclusive')
     .escape(),
   body('address')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Address is required')
@@ -80,6 +88,7 @@ const validators = [
     .withMessage('Address must be between 10 and 100 characters inclusive')
     .escape(),
   body('cacNumber')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('CAC number is required')
@@ -87,7 +96,6 @@ const validators = [
     .withMessage('CAC number must be between 3 and 10 characters inclusive')
     .escape(),
   body('zipCode')
-    .trim(' ')
     .notEmpty()
     .withMessage('Zip code is required')
     .isInt({ min: 1 })
@@ -95,7 +103,10 @@ const validators = [
     .escape(),
   body('sdgs')
     .isArray({ min: 1, max: 5 })
-    .withMessage('SDG must be between 1 and 100 inclusive'),
+    .withMessage('List of SDGs cannot exceed 5'),
+  body('sdgs.*')
+    .isInt({ min: 1, max: 17 })
+    .withMessage('SDG must be between 1 and 17'),
   body('socialMedia')
     .isArray({ min: 1 })
     .withMessage('Social media must be at least 1'),
@@ -103,6 +114,31 @@ const validators = [
     .optional()
     .isArray({ min: 1 })
     .withMessage('Needs must have at least 1 item'),
+  body('needs.*.name')
+    .isString()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Need must have name'),
+  body('needs.*.desc')
+    .isString()
+    .notEmpty()
+    .isLength({ min: 12, max: 100 })
+    .withMessage('Description must be between 12 and 100 characters long'),
+  body('needs.*.quantity')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Quantity must be a positive non-zero number'),
+  body('needs.*.unit')
+    .optional()
+    .isString()
+    .notEmpty()
+    .isLength({ min: 1, max: 20 })
+    .withMessage('Units cannot exceed 20 characters long'),
+  body('needs.*.purpose')
+    .optional()
+    .isString()
+    .notEmpty()
+    .isLength({ min: 12, max: 100 })
+    .withMessage('Purpose must be between 12 and 100 characters long'),
 ];
 
 module.exports = validators;

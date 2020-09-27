@@ -99,7 +99,7 @@ describe('POST /api/v1.0.0/donation_item', () => {
     });
   });
 
-  describe('when requested for a list of items', () => {
+  describe('when requested with name as an array', () => {
     const req = {
       body: [
         {
@@ -138,7 +138,7 @@ describe('POST /api/v1.0.0/donation_item', () => {
     it('responds status 500', () => {
       expect(resStatusSpy).toHaveBeenCalledWith(500);
     });
-    it('responds with an error message', () => {
+    it('responds as an internal server error message', () => {
       expect(resSendSpy).toHaveBeenCalled();
     });
   });

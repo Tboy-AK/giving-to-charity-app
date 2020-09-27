@@ -17,6 +17,7 @@ const validators = [
     .withMessage('Phone number must include country code'),
   body('country')
     .optional()
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Country cannot be empty')
@@ -25,6 +26,7 @@ const validators = [
     .escape(),
   body('state')
     .optional()
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('State cannot be empty')
@@ -33,6 +35,7 @@ const validators = [
     .escape(),
   body('city')
     .optional()
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('City cannot be empty')
@@ -52,8 +55,6 @@ const validators = [
     ))
     .withMessage('At least SDGs or NGOs must be specified'),
   body('sdgs.*')
-    .notEmpty()
-    .withMessage('Social media must have name and url')
     .isInt({ min: 1, max: 17 })
     .withMessage('Specify SDGs by their numbers. There are currently only 1 to 17 SDGs'),
   body('ngos')
@@ -69,9 +70,8 @@ const validators = [
     ))
     .withMessage('At least NGOs or SDGs must be specified'),
   body('ngos.*')
+    .isMongoId()
     .trim(' ')
-    .notEmpty()
-    .withMessage('NGOs')
     .isLength({ min: 1, max: 24 })
     .withMessage('Specify NGOs by their IDs'),
 ];

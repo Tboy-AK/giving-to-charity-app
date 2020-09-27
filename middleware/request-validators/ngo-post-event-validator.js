@@ -4,7 +4,13 @@ const validators = [
   header('useraccesspayload')
     .notEmpty()
     .withMessage('User must be authorized'),
+  header('useraccesspayload.authId')
+    .isMongoId()
+    .trim(' ')
+    .notEmpty()
+    .withMessage('Invalid access'),
   body('name')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Name is required')
@@ -17,6 +23,7 @@ const validators = [
     .isDate()
     .withMessage('Invalid date/time format. Compare YYYY-MM-DDThh:mm:ss.sssZ'),
   body('desc')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Description is required')
@@ -28,12 +35,14 @@ const validators = [
     .isArray({ min: 1, max: 10 })
     .withMessage('Online platform must be at least 1'),
   body('onlinePlatforms.*.name')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Online platform must have name and url')
     .isLength({ min: 2, max: 30 })
     .withMessage('Online platform must have URI iwth approriate length'),
   body('onlinePlatforms.*.url')
+    .isURL()
     .trim(' ')
     .notEmpty()
     .withMessage('Online platform must have URI')
@@ -44,6 +53,7 @@ const validators = [
     .notEmpty()
     .withMessage('Venue cannot be empty if present'),
   body('venue.country')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Country is required')
@@ -51,6 +61,7 @@ const validators = [
     .withMessage('Country must be between 2 and 50 characters inclusive')
     .escape(),
   body('venue.state')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('State is required')
@@ -58,6 +69,7 @@ const validators = [
     .withMessage('State must be between 2 and 50 characters inclusive')
     .escape(),
   body('venue.city')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('City is required')
@@ -65,6 +77,7 @@ const validators = [
     .withMessage('City must be between 2 and 50 characters inclusive')
     .escape(),
   body('venue.address')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Address is required')
@@ -72,7 +85,6 @@ const validators = [
     .withMessage('Address must be between 10 and 100 characters inclusive')
     .escape(),
   body('venue.zipCode')
-    .trim(' ')
     .notEmpty()
     .withMessage('Zip code is required')
     .isInt({ min: 1 })
@@ -80,6 +92,7 @@ const validators = [
     .escape(),
   body('mission')
     .optional()
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Mission cannot be empty')
@@ -88,6 +101,7 @@ const validators = [
     .escape(),
   body('vision')
     .optional()
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Vision cannot be empty')
@@ -96,6 +110,7 @@ const validators = [
     .escape(),
   body('website')
     .optional()
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Website cannot be empty')
@@ -109,14 +124,16 @@ const validators = [
   body('socialMedia')
     .optional()
     .isArray({ min: 1, max: 10 })
-    .withMessage('Social media must be at least 1'),
+    .withMessage('Social media must be between 1 and 10'),
   body('socialMedia.*.name')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Social media must have name and url')
     .isIn(['Instagram', 'Twitter', 'Facebook', 'LinkedIn'])
     .withMessage('Social media name not recognised'),
   body('socialMedia.*.url')
+    .isURL()
     .trim(' ')
     .notEmpty()
     .withMessage('Social media must have URI')
@@ -127,8 +144,30 @@ const validators = [
     .isArray({ min: 1, max: 100 })
     .withMessage('Needs must have at least 1 item'),
   body('needs.*.name')
+    .isString()
     .isLength({ min: 2, max: 100 })
     .withMessage('Need must have name'),
+  body('needs.*.desc')
+    .isString()
+    .notEmpty()
+    .isLength({ min: 12, max: 100 })
+    .withMessage('Description must be between 12 and 100 characters long'),
+  body('needs.*.quantity')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Quantity must be a positive non-zero number'),
+  body('needs.*.unit')
+    .optional()
+    .isString()
+    .notEmpty()
+    .isLength({ min: 1, max: 20 })
+    .withMessage('Units cannot exceed 20 characters long'),
+  body('needs.*.purpose')
+    .optional()
+    .isString()
+    .notEmpty()
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Purpose cannot exceed 100 characters long'),
 ];
 
 module.exports = validators;
