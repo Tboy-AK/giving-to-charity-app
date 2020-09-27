@@ -15,66 +15,85 @@ const userDonationController = (errResponse, ProhibitedDonationItemModel, EventM
 
     const itemNames = reqBody.map(({ name }) => name);
 
-    const donationSuggestions = [];
+    const donationSuggestions = { organisations: [], events: [] };
+    let totalSuggestionsCount = 0;
+    let errObject;
 
     // Check for prohibited items in user's request
     const prohibitedItems = await ProhibitedDonationItemModel
-      .find({ sdgs: { $in: itemNames } }, 'name')
-      .catch((err) => errResponse(res, 500, null, err));
+      .find({ name: { $in: itemNames } })
+      .catch((err) => { errObject = err; });
+
+    if (errObject) return errResponse(res, 500, null, errObject);
 
     if (
       prohibitedItems && prohibitedItems.length > 0
     ) return errResponse(res, 400, `Prohibited items: ${prohibitedItems.join(', ')}`);
 
     // Get list of NGOs that need the specified items
-    NGOModel.find(
-      { needs: { $in: itemNames } },
+    await NGOModel.find(
+      { needs: { $elemMatch: { name: { $in: itemNames } } } },
       '_id name ngoId desc sdgs address website needs',
     )
       .then(async (ngosWithNeeds) => {
         if (ngosWithNeeds && ngosWithNeeds.length > 0) {
           // Pass as a donation suggestion
-          donationSuggestions.push(ngosWithNeeds);
+          donationSuggestions.organisations.push(...ngosWithNeeds);
+          totalSuggestionsCount += ngosWithNeeds.length;
 
           // Get list of events by the suggested NGOs
           const ngoIdsBySDG = ngosWithNeeds.map(({ _id }) => _id);
 
-          const ngoEventsByNGOs = await EventModel
+          await EventModel
             .find(
-              { ngoId: { $in: ngoIdsBySDG } },
+              {
+                ngoId: { $in: ngoIdsBySDG },
+                needs: { $elemMatch: { name: { $nin: itemNames } } },
+              },
               '_id name ngoId desc sdg dateTime venue website needs',
             )
             .where('dateTime').gt(Date.now())
             .limit(100)
-            .populate('ngoId', 'name');
-
-          if (
-            ngoEventsByNGOs && ngoEventsByNGOs.length > 0
-          ) donationSuggestions.push(ngoEventsByNGOs);
+            .populate('ngoId', 'name')
+            .then((ngoEventsByNGOs) => {
+              if (
+                ngoEventsByNGOs && ngoEventsByNGOs.length > 0
+              ) {
+                donationSuggestions.events.push(...ngoEventsByNGOs);
+                totalSuggestionsCount += ngoEventsByNGOs.length;
+              }
+            })
+            .catch((err) => { errObject = err; });
         }
-      });
+      })
+      .catch((err) => { errObject = err; });
 
     // Get list of events that need the specified items
-    const ngoEventsBySDG = await EventModel.find(
-      {
-        needs: { $in: itemNames },
-      },
+    await EventModel.find(
+      { needs: { $elemMatch: { name: { $in: itemNames } } } },
       '_id name desc sdg dateTime venue website needs',
     )
       .where('dateTime').gt(Date.now())
       .limit(100)
-      .populate('ngoId', 'name');
+      .populate('ngoId', 'name')
+      .then((ngoEventsWithNeeds) => {
+        if (
+          ngoEventsWithNeeds && ngoEventsWithNeeds.length > 0
+        ) {
+          donationSuggestions.events.push(...ngoEventsWithNeeds);
+          totalSuggestionsCount += ngoEventsWithNeeds.length;
+        }
+      })
+      .catch((err) => { errObject = err; });
 
-    if (
-      ngoEventsBySDG && ngoEventsBySDG.length > 0
-    ) donationSuggestions.push(ngoEventsBySDG);
+    if (errObject) return errResponse(res, 500, null, errObject);
 
     return res
       .status(200)
       .json({
         message: '',
         data: donationSuggestions,
-        count: donationSuggestions.length,
+        count: totalSuggestionsCount,
       });
   };
 

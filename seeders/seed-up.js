@@ -9,6 +9,7 @@ const SubscriberModel = require('../models/mongodb-models/subscriber-model');
 const SDGModel = require('../models/mongodb-models/sdg-model');
 const NGOModel = require('../models/mongodb-models/ngo-model');
 const EventModel = require('../models/mongodb-models/event-model');
+const ProhibitedItemModel = require('../models/mongodb-models/prohibited-donation-item-model');
 
 // Data
 const { data: adminAuthsData } = require('./data/admin-auths-data');
@@ -18,8 +19,9 @@ const sdgsData = require('./data/sdgs-data.json');
 const { data: subscribersData } = require('./data/subscribers-data');
 const { data: ngosData } = require('./data/ngos-data');
 const { data: eventsData } = require('./data/events-data');
+const prohibitedItemsData = require('./data/prohibited-donation-items-data.json');
 
-const processCount = 7;
+const processCount = 8;
 let processErrorCount = 0;
 let processSuccessCount = 0;
 
@@ -51,6 +53,8 @@ db.dropDatabase()
     NGOModel.insertMany(ngosData, (err) => exitProcess(err, 'ngos'));
 
     EventModel.insertMany(eventsData, (err) => exitProcess(err, 'events'));
+
+    ProhibitedItemModel.insertMany(prohibitedItemsData, (err) => exitProcess(err, 'prohibited items'));
   })
   .catch((err) => {
     logger.error(err.message);
