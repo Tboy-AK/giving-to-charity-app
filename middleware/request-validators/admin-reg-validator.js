@@ -2,9 +2,13 @@ const { body, header } = require('express-validator');
 
 const validators = [
   header('useraccesspayload')
-    .trim(' ')
     .notEmpty()
     .withMessage('User must be authorized'),
+  header('useraccesspayload.authId')
+    .isMongoId()
+    .trim(' ')
+    .notEmpty()
+    .withMessage('Invalid access'),
   body('email')
     .trim(' ')
     .notEmpty()
@@ -28,6 +32,7 @@ const validators = [
     .withMessage('Passwords must match')
     .escape(),
   body('firstName')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('First name is required')
@@ -35,6 +40,7 @@ const validators = [
     .withMessage('First name must be at least 2 characters')
     .escape(),
   body('lastName')
+    .isString()
     .trim(' ')
     .notEmpty()
     .withMessage('Last name is required')

@@ -9,6 +9,7 @@ const NeedItemSchema = new Schema({
     minlength: 2,
     maxlength: 30,
     trim: ' ',
+    lowercase: true,
   },
   desc: {
     type: String,
@@ -21,6 +22,15 @@ const NeedItemSchema = new Schema({
     required: true,
     min: 1,
     default: 1,
+  },
+  unit: {
+    type: String,
+    required: true,
+    minlength: 1,
+    maxlength: 20,
+    trim: ' ',
+    lowercase: true,
+    default: 'piece',
   },
   supply: {
     type: Number,

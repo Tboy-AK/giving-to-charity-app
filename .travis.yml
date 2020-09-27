@@ -6,7 +6,7 @@ services:
   - mongodb
 before_script:
   - sleep 15
-  - mongo mydb_test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
+  - mongo test_give_to_charity_app --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
 env:
   global:
     - NODE_ENV=test

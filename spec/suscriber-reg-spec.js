@@ -4,7 +4,7 @@ const EventModel = require('../models/mongodb-models/event-model');
 const NGOModel = require('../models/mongodb-models/ngo-model');
 const { createSubscriber } = require('../controllers/subscriber-controller')(errResponse, SubscriberModel, EventModel, NGOModel);
 
-describe('POST /api/v1.0.0/ngo', () => {
+describe('POST /api/v1.0.0/subscriber', () => {
   const res = {
     status: (statusCode) => ({ statusCode, ...res }),
     json: (message) => ({ message, ...res }),

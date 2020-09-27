@@ -1,0 +1,70 @@
+[
+  {
+    "name": "gun",
+    "desc": "A propelling weapon of war"
+  },
+  {
+    "name": "guns",
+    "desc": "Propelling weapons of war"
+  },
+  {
+    "name": "porn",
+    "desc": "Obscene sexual immorality"
+  },
+  {
+    "name": "pornography",
+    "desc": "Obscene sexual immorality"
+  },
+  {
+    "name": "bomb",
+    "desc": "An explosive weapon of war"
+  },
+  {
+    "name": "bombs",
+    "desc": "Explosive weapons of war"
+  },
+  {
+    "name": "poison",
+    "desc": "Substance causing bio harm"
+  },
+  {
+    "name": "sword",
+    "desc": "Blade inteded for war"
+  },
+  {
+    "name": "swords",
+    "desc": "Blades inteded for war"
+  },
+  {
+    "name": "arrow",
+    "desc": "Spearheaded weapon shot like a catapult to attack"
+  },
+  {
+    "name": "arrows",
+    "desc": "Spearheaded weapons shot like a catapult to attack"
+  },
+  {
+    "name": "spear",
+    "desc": "Long stick with pointed head thrown to attack"
+  },
+  {
+    "name": "spears",
+    "desc": "Long sticks with pointed head thrown to attack"
+  },
+  {
+    "name": "weapon",
+    "desc": "Item intended for war"
+  },
+  {
+    "name": "weapons",
+    "desc": "Items intended for war"
+  },
+  {
+    "name": "weaponry",
+    "desc": "Collection of items intended for war"
+  },
+  {
+    "name": "cigarette",
+    "desc": "Toxically ingested substance for smoking"
+  }
+]
