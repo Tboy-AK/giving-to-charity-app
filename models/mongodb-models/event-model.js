@@ -56,16 +56,6 @@ class validators {
       );
     };
   }
-
-  /**
-   * @description This function ensures that the date specified meets the minimum set time span
-   * @param {Number} timeSpan (ms) The minimum time span allowable in miliseconds
-   */
-  static earlyBooking(timeSpan) {
-    return (val) => (
-      new Date(val).valueOf() - Date.now() >= timeSpan
-    );
-  }
 }
 
 const AddressSchema = new Schema({
@@ -130,7 +120,10 @@ const EventSchema = new Schema({
   dateTime: {
     type: Date,
     required: true,
-    validate: [validators.earlyBooking(2592000000), 'Time span too short'],
+    min: [
+      Date.now() + 2592000000,
+      'Time span should be at least a month ahead',
+    ],
   },
   desc: {
     type: String,

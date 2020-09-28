@@ -4,24 +4,65 @@ const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
 const htmlWrapper = require('../utils/html-wrapper');
 
-const donationController = (errResponse, EventModel, NGOModel) => {
+const donationController = (errResponse, DonationModel, NGOModel, EventModel) => {
   const donateItem = async (req, res) => {
-    // validate user request data
+    // Validate user request data
     const validationError = validationResult(req);
     if (!validationError.isEmpty()) {
       return errResponse(res, 422, validationError.array({ onlyFirstError: true }));
     }
-    EventModel.find({});
-    NGOModel.find({});
 
-    const domain = `https://${process.env.DOMAIN}`;
+    // Get request data for utilization purposes
+    const reqBody = { ...req.body };
+    reqBody.logistics = req.query.logisticsBy;
 
-    // Notify NGO via email
-    {
-      const { email } = req.body;
-      const subject = 'New Donation';
-      const text = 'A new donation has been made on your account';
-      const htmlBody = `
+    // Save donation data to database
+    const donationModel = new DonationModel(reqBody);
+    return donationModel.save()
+      .then(async () => {
+        const eventDoc = await EventModel.findById(req.params.eventId, 'ngoId');
+        if (!eventDoc) throw new Error('Resource not found');
+
+        const ngoDoc = await NGOModel.findById(eventDoc.eventId, 'email');
+        if (!ngoDoc) throw new Error('Resource not found');
+
+        const domain = `https://${process.env.DOMAIN}`;
+
+        // Notify NGO via email
+        {
+          const { email } = req.body;
+          const subject = 'New Donation';
+          const text = 'A new donation has been made to your account';
+          const htmlBody = `
+                <p>
+                  Hi there,
+                </p>
+                <br/>
+                <p>
+                  A new donation has been created to your account.
+                </p>
+                <br/>
+                <p>
+                  Thanks,
+                  <br/>
+                  The  
+                  <a href='${domain}' style='font-size: 2rem;'>
+                    Give To Charity
+                  </a>
+                  team.
+                </p>
+              `;
+          const html = htmlWrapper(htmlBody, 'Event Creation');
+          mailer(email, subject, text, html)
+            .catch((err) => logger.error(err.message));
+        }
+
+        // Notify donor via email
+        {
+          const { email } = ngoDoc;
+          const subject = 'New Donation';
+          const text = 'A new donation has been made on your account';
+          const htmlBody = `
                 <p>
                   Hi there,
                 </p>
@@ -40,15 +81,18 @@ const donationController = (errResponse, EventModel, NGOModel) => {
                   team.
                 </p>
               `;
-      const html = htmlWrapper(htmlBody, 'Event Creation');
-      mailer(email, subject, text, html)
-        .catch((err) => logger.error(err.message));
-      return res
-        .status(201)
-        .json({
-          message: 'Donation application submitted succesfully',
-        });
-    }
+          const html = htmlWrapper(htmlBody, 'Event Creation');
+          mailer(email, subject, text, html)
+            .catch((err) => logger.error(err.message));
+        }
+
+        return res
+          .status(201)
+          .json({
+            message: 'Donation application submitted succesfully',
+          });
+      })
+      .catch(() => { });
   };
 
   return { donateItem };
