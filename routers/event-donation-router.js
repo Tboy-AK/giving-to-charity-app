@@ -1,10 +1,10 @@
 const { Router } = require('express');
-const eventDonationValidator = require('../middleware/request-validators/event-donation-by-ngo-validator');
+const eventDonationValidator = require('../middleware/request-validators/event-donation-validator');
 const errResponse = require('../utils/error-response-handler');
 const DonationModel = require('../models/mongodb-models/donation-model');
-const NGOModel = require('../models/mongodb-models/event-model');
 const EventModel = require('../models/mongodb-models/event-model');
-const { donateItem } = require('../controllers/event-donation-controller')(errResponse, DonationModel, NGOModel, EventModel);
+const AuthModel = require('../models/mongodb-models/auth-model');
+const { donateItem } = require('../controllers/event-donation-controller')(errResponse, DonationModel, EventModel, AuthModel);
 
 const EventDonationRouter = Router();
 

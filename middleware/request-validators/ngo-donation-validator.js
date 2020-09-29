@@ -1,7 +1,7 @@
 const { body, param, query } = require('express-validator');
 
 const validators = [
-  query('logisticsBy')
+  query('logistics')
     .trim(' ')
     .notEmpty()
     .withMessage('Logististics handler must be present')

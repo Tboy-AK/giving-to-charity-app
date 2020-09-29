@@ -4,7 +4,7 @@ const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
 const htmlWrapper = require('../utils/html-wrapper');
 
-const donationController = (errResponse, DonationModel, NGOModel, EventModel) => {
+const donationController = (errResponse, DonationModel, EventModel, AuthModel) => {
   const donateItem = async (req, res) => {
     // Validate user request data
     const validationError = validationResult(req);
@@ -14,17 +14,23 @@ const donationController = (errResponse, DonationModel, NGOModel, EventModel) =>
 
     // Get request data for utilization purposes
     const reqBody = { ...req.body };
-    reqBody.logistics = req.query.logisticsBy;
+    reqBody.logistics = req.query.logistics;
 
     // Save donation data to database
     const donationModel = new DonationModel(reqBody);
     return donationModel.save()
       .then(async () => {
-        const eventDoc = await EventModel.findById(req.params.eventId, 'ngoId');
-        if (!eventDoc) throw new Error('Resource not found');
+        const eventDoc = await EventModel
+          .findById(req.params.eventId, 'ngoId')
+          .populate('ngoId', 'authId');
+        const reqErr = new Error('Resource not found');
+        reqErr.code = 404;
+        if (!eventDoc) throw reqErr;
 
-        const ngoDoc = await NGOModel.findById(eventDoc.eventId, 'email');
-        if (!ngoDoc) throw new Error('Resource not found');
+        const authDoc = await AuthModel
+          .findById(eventDoc.ngoId.authId, 'email')
+          .populate('ngoId', 'authId');
+        if (!authDoc) throw reqErr;
 
         const domain = `https://${process.env.DOMAIN}`;
 
@@ -59,7 +65,7 @@ const donationController = (errResponse, DonationModel, NGOModel, EventModel) =>
 
         // Notify donor via email
         {
-          const { email } = ngoDoc;
+          const { email } = authDoc;
           const subject = 'New Donation';
           const text = 'A new donation has been made on your account';
           const htmlBody = `
@@ -89,10 +95,31 @@ const donationController = (errResponse, DonationModel, NGOModel, EventModel) =>
         return res
           .status(201)
           .json({
-            message: 'Donation application submitted succesfully',
+            message: 'Donation submitted succesfully',
           });
       })
-      .catch(() => { });
+      .catch((err) => {
+        if (err.code) {
+          switch (err.code) {
+            case 11000:
+              return errResponse(res, 400, 'Event already exists');
+
+            case 404:
+              return errResponse(res, 404, err.message);
+
+            default:
+              return errResponse(res, 500, null, err);
+          }
+        }
+
+        switch (err.name) {
+          case 'ValidationError':
+            return errResponse(res, 400, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
   };
 
   return { donateItem };

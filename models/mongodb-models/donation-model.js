@@ -4,14 +4,22 @@ const { Schema, model } = mongoose;
 
 class validators {
   /**
-   * @description Dynamically validates the size range of an array field
-   * @param {Number} min minimum length
-   * @param {Number} max maximum length
+   * @description Arrays and Strings - Dynamically validates an inclusive max length
+   * @param {Number} max maximum length inclusive
    */
-  static arrayLengthRange(min, max) {
+  static arrayMaxLength(max) {
     return (val) => (
-      val.length >= min
-      && val.length <= max
+      val && val.length <= max
+    );
+  }
+
+  /**
+   * @description Arrays and Strings - Dynamically validates an inclusive min length
+   * @param {Number} min minimum length inclusive
+   */
+  static arrayMinLength(min) {
+    return (val) => (
+      val && val.length >= min
     );
   }
 
@@ -21,10 +29,7 @@ class validators {
   static ngoExists() {
     return function validation(val) {
       return (
-        !(
-          !val
-          && !this.ngoId
-        )
+        val && !this.ngoId
       );
     };
   }
@@ -35,10 +40,7 @@ class validators {
   static eventExists() {
     return function validation(val) {
       return (
-        !(
-          !val
-          && !this.eventId
-        )
+        val && !this.eventId
       );
     };
   }
@@ -66,6 +68,7 @@ const DonationItemSchema = new Schema({
   },
   desc: {
     type: String,
+    required: true,
     minlength: 10,
     maxlength: 100,
     trim: ' ',
@@ -112,9 +115,14 @@ const PickupSchema = new Schema({
     minlength: 2,
     maxlength: 50,
   },
+  street: {
+    type: String,
+    required: true,
+    minlength: 2,
+    maxlength: 50,
+  },
   zipCode: {
     type: Number,
-    required: true,
     min: 100,
   },
   address: {
@@ -123,13 +131,17 @@ const PickupSchema = new Schema({
     minlength: 2,
     maxlength: 500,
   },
+  landmark: {
+    type: String,
+    minlength: 5,
+    maxlength: 50,
+  },
 }, { _id: false });
 
 const DonationSchema = new Schema({
   ngoId: {
     type: Schema.Types.ObjectId,
     ref: 'NGO',
-    required: true,
     validate: [
       validators.eventExists(),
       'Event or NGO must be provided',
@@ -138,24 +150,27 @@ const DonationSchema = new Schema({
   eventId: {
     type: Schema.Types.ObjectId,
     ref: 'Event',
-    required: true,
     validate: [
       validators.ngoExists(),
       'Event or NGO must be provided',
     ],
   },
-  items: [DonationItemSchema],
+  items: {
+    type: [DonationItemSchema],
+    validate: [
+      validators.arrayMinLength(1),
+      'At least an item must be provided',
+    ],
+  },
   email: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true,
     match: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
   },
   phone: {
     type: String,
     required: true,
-    unique: true,
     minlength: 10,
     maxlength: 30,
     trim: ' ',
@@ -164,8 +179,8 @@ const DonationSchema = new Schema({
     type: Date,
     required: true,
     min: [
-      Date.now() + 2592000000,
-      'Time span should be at least a month ahead',
+      Date.now() + 3600000,
+      'Donation cannot be made before the current time',
     ],
   },
   logistics: {
@@ -180,6 +195,11 @@ const DonationSchema = new Schema({
       validators.ngoHandlesLogistics(),
       'Pickup point for the NGO to locate the donor must be included',
     ],
+  },
+  received: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
 }, { timestamps: true });
 

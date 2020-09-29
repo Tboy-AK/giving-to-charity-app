@@ -14,14 +14,18 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
 
     // Get request data for utilization purposes
     const reqBody = { ...req.body };
-    reqBody.logistics = req.query.logisticsBy;
+    reqBody.logistics = req.query.logistics;
 
     // Save donation data to database
     const donationModel = new DonationModel(reqBody);
     return donationModel.save()
-      .then(async () => {
-        const ngoDoc = await NGOModel.findById(req.param.eventId, 'email');
-        if (!ngoDoc) throw new Error('Resource not found');
+      .then(async (donationDoc) => {
+        const ngoDoc = await NGOModel
+          .findById(req.params.ngoId, '_id')
+          .populate('authId', 'email');
+        const reqErr = new Error('Resource not found');
+        reqErr.code = 404;
+        if (!ngoDoc) throw reqErr;
 
         const domain = `https://${process.env.DOMAIN}`;
 
@@ -56,7 +60,7 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
 
         // Notify donor via email
         {
-          const { email } = ngoDoc;
+          const { email } = ngoDoc.authId;
           const subject = 'New Donation';
           const text = 'A new donation has been made on your account';
           const htmlBody = `
@@ -86,10 +90,32 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
         return res
           .status(201)
           .json({
-            message: 'Donation application submitted succesfully',
+            message: 'Donation submitted succesfully',
+            data: donationDoc,
           });
       })
-      .catch(() => { });
+      .catch((err) => {
+        if (err.code) {
+          switch (err.code) {
+            case 11000:
+              return errResponse(res, 400, 'Resource already exists');
+
+            case 404:
+              return errResponse(res, 404, err.message);
+
+            default:
+              return errResponse(res, 500, null, err);
+          }
+        }
+
+        switch (err.name) {
+          case 'ValidationError':
+            return errResponse(res, 400, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
   };
 
   return { donateItem };

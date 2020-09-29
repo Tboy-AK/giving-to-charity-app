@@ -8,7 +8,7 @@ const eventsData = [
     _id: event1Id,
     ngoId: id1,
     name: 'Child Dream Tech Power Camp 1.0',
-    dateTime: '2021-04-30',
+    dateTime: new Date(Date.now() + (3600000 * 24 * 30 * 6)).toJSON(),
     desc: 'This is a test event versioned as 1.0 because it is the first of its kind',
     mission: 'To promote the seamless testing of this app',
     vision: 'A well tested API without unnecessary future stress',
