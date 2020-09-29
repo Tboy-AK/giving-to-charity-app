@@ -330,7 +330,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=ngo', () => {
     });
   });
 
-  fdescribe('when requested with a non-existent NGO', () => {
+  describe('when requested with a non-existent NGO', () => {
     const req = {
       query: {
         logistics: 'ngo',

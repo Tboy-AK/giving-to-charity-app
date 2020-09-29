@@ -20,7 +20,6 @@ const AuthSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 12,
-    select: false,
   },
   role: {
     type: String,
