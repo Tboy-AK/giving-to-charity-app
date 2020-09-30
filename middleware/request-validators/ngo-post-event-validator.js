@@ -20,8 +20,8 @@ const validators = [
   body('dateTime')
     .notEmpty()
     .withMessage('Date and time is required')
-    .isDate()
-    .withMessage('Invalid date/time format. Compare YYYY-MM-DDThh:mm:ss.sssZ'),
+    .matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?/)
+    .withMessage('Invalid date/time format, compare: YYYY-MM-DDThh:mm:ss.sssZ'),
   body('desc')
     .isString()
     .trim(' ')

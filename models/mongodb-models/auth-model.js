@@ -31,11 +31,13 @@ const AuthSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
     required: true,
+    select: false,
   },
   suspended: {
     type: Boolean,
     default: false,
     required: true,
+    select: false,
   },
 }, { timestamps: true });
 const AuthModel = mongoose.model('Auth', AuthSchema);

@@ -15,6 +15,8 @@ const { NGORegRouter } = require('./routers/ngo-reg-router');
 const { NGOEventRouter } = require('./routers/ngo-event-router');
 const { SubscriberRouter } = require('./routers/subscriber-router');
 const { UserDonationItemRouter } = require('./routers/user-donation-item-router');
+const { NGODonationRouter } = require('./routers/ngo-donation-router');
+const { EventDonationRouter } = require('./routers/event-donation-router');
 
 const { urlencoded, json } = express;
 
@@ -42,6 +44,8 @@ server.use(`/api/${version}`, [
   NGOEventRouter,
   SubscriberRouter,
   UserDonationItemRouter,
+  NGODonationRouter,
+  EventDonationRouter,
 ]);
 
 const hostname = process.env.HOSTNAME || 'localhost';
