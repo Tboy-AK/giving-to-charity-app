@@ -179,6 +179,11 @@ const donationController = (errResponse, DonationModel, EventModel, AuthModel) =
             .catch((err) => logger.error(err.message));
         }
 
+        // Filter response data
+        const resData = { ...donationDoc };
+        delete resData._v;
+        delete resData.updatedAt;
+
         return res
           .status(201)
           .json({

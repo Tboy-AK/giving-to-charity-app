@@ -27,7 +27,7 @@ const eventController = (errResponse, NGOModel, EventModel) => {
             // Send email to NGO
             // Filter out only data necessary for response
             const resNGOEvent = ngoEvent;
-            resNGOEvent.socialMedia.forEach((e, i) => {
+            ngoEvent.socialMedia.forEach((e, i) => {
               const { name, url } = e;
               // eslint-disable-next-lin
               resNGOEvent.socialMedia[i] = { name, url };
