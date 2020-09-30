@@ -57,12 +57,18 @@ const validators = [
   body('dateTime')
     .notEmpty()
     .withMessage('Date and time is required')
-    .isDate()
-    .withMessage('Invalid date/time format. Compare YYYY-MM-DDThh:mm:ss.sssZ'),
+    .matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?/)
+    .withMessage('Invalid date/time format, compare: YYYY-MM-DDThh:mm:ss.sssZ'),
   body('pickup')
+    .if((val, { req }) => (
+      req.query.logistics === 'ngo'
+    ))
     .notEmpty()
     .withMessage('Pickup point must be detailed out'),
   body('pickup.country')
+    .if((val, { req }) => (
+      req.body.pickup
+    ))
     .isString()
     .trim(' ')
     .notEmpty()
@@ -71,6 +77,9 @@ const validators = [
     .withMessage('Country must be between 2 and 50 characters inclusive')
     .escape(),
   body('pickup.state')
+    .if((val, { req }) => (
+      req.body.pickup
+    ))
     .isString()
     .trim(' ')
     .notEmpty()
@@ -79,6 +88,9 @@ const validators = [
     .withMessage('State must be between 2 and 50 characters inclusive')
     .escape(),
   body('pickup.city')
+    .if((val, { req }) => (
+      req.body.pickup
+    ))
     .isString()
     .trim(' ')
     .notEmpty()
@@ -87,6 +99,9 @@ const validators = [
     .withMessage('City must be between 2 and 50 characters inclusive')
     .escape(),
   body('pickup.zipCode')
+    .if((val, { req }) => (
+      req.body.pickup
+    ))
     .optional()
     .notEmpty()
     .withMessage('Zip code is required')
@@ -94,6 +109,9 @@ const validators = [
     .withMessage('Zip code cannot be less than 100')
     .escape(),
   body('pickup.address')
+    .if((val, { req }) => (
+      req.body.pickup
+    ))
     .isString()
     .trim(' ')
     .notEmpty()

@@ -37,39 +37,42 @@ const eventController = (errResponse, NGOModel, EventModel) => {
 
             // Notify NGO via email
             {
+              const htmlFooter = `
+                <p>
+                  Thanks,
+                  <br/>
+                  The 
+                  <span style='background-color: gray;'> Give To Charity</span>
+                  team.
+                </p>
+              `;
               const { email } = req.headers.useraccesspayload;
               const subject = 'New Event';
               const text = `A new event titled "${reqBody.name}" has been created on your account`;
               const htmlBody = `
-                <p>
-                  Dear ${ngoResult.name},
-                </p>
-                <br/>
-                <p>
-                  A new event titled
-                  <span style='font-weight: 700;'> "${reqBody.name}" </span>
-                  has been created on your account. Confirm this 
-                  <a href='${domain}/ngo/${req.params.ngoId}/event/${resNGOEvent._id}'>
-                    here
-                  </a>.
-                  If this wasn't you, please retract and report to the 
-                  <a href='${domain}/support'>
-                    support
-                  </a>
-                  team, else, you're good to go.
-                </p>
-                <br/>
-                <p>
-                  Thanks,
-                  <br/>
-                  The  
-                  <a href='${domain}' style='font-size: 2rem;'>
-                    Give To Charity
-                  </a>
-                  team.
-                </p>
+                <main class='container'>
+                  <section class='Intro container'>
+                    <p>
+                      Dear ${ngoResult.name},
+                    </p>
+                    <br/>
+                    <p>
+                      A new event titled
+                      <span style='font-weight: 700;'> "${reqBody.name}" </span>
+                      has been created on your account. Confirm this 
+                      <a href='${domain}/ngo/${req.params.ngoId}/event/${resNGOEvent._id}'>
+                        here
+                      </a>.
+                      If this wasn't you, please retract and report to the 
+                      <a href='${domain}/support'>
+                        support
+                      </a>
+                      team, else, you're good to go.
+                    </p>
+                  </section>
+                </main>
               `;
-              const html = htmlWrapper(htmlBody, 'Event Creation');
+              const html = htmlWrapper(htmlBody, 'Event Creation', htmlFooter);
               mailer(email, subject, text, html)
                 .catch((err) => logger.error(err.message));
             }

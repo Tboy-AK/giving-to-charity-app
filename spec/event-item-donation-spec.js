@@ -142,6 +142,50 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=donor', () => {
     });
   });
 
+  describe('when forced to relate donation to both NGO and event', () => {
+    const req = {
+      query: {
+        logistics: 'donor',
+      },
+      params: {
+        eventId,
+      },
+      body: {
+        ngoId: eventId,
+        items: [{
+          name: 'Pencil',
+          desc: 'A pack of HB pencils',
+        }],
+        email: 'testdonor@testmail.com',
+        phone: '+2347065390558',
+        dateTime: new Date(Date.now() + (3600000 * 24 * 7)).toJSON(),
+      },
+    };
+    let resStatusSpy;
+    let resSendSpy;
+
+    beforeAll(async (done) => {
+      req.params.eventId = await eventId;
+      req.body.ngoId = await eventId;
+      req.body.eventId = await eventId;
+      resStatusSpy = spyOn(res, 'status').and.callThrough();
+      resSendSpy = spyOn(res, 'send');
+      await donateItem(req, res);
+      done();
+    });
+
+    afterAll(async (done) => {
+      DonationModel.deleteOne({ email: req.body.email }, () => done());
+    });
+
+    it('responds status 400', () => {
+      expect(resStatusSpy).toHaveBeenCalledWith(400);
+    });
+    it('responds with a validation error message', () => {
+      expect(resSendSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('when requested without specifying who handles logistics as a request query', () => {
     const req = {
       query: {},

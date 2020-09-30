@@ -29,7 +29,8 @@ class validators {
   static ngoExists() {
     return function validation(val) {
       return (
-        val && !this.ngoId
+        !(!val && !this.ngoId)
+        && val && !this.ngoId
       );
     };
   }
@@ -40,7 +41,8 @@ class validators {
   static eventExists() {
     return function validation(val) {
       return (
-        val && !this.eventId
+        !(!val && !this.eventId)
+        && val && !this.eventId
       );
     };
   }

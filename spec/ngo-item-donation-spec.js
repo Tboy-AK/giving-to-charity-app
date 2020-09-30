@@ -141,6 +141,98 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=donor', () => {
     });
   });
 
+  describe('when requested with pickup point', () => {
+    const req = {
+      query: {
+        logistics: 'donor',
+      },
+      params: {
+        ngoId,
+      },
+      body: {
+        items: [{
+          name: 'Pencil',
+          desc: 'A pack of HB pencils',
+        }],
+        email: 'testdonor@testmail.com',
+        phone: '+2347065390558',
+        dateTime: new Date(Date.now() - (3600000 * 24)).toJSON(),
+        pickup: {
+          country: 'Nigeria',
+          state: 'Lagos',
+          city: 'Ọgbà',
+          street: 'Ṣoníbáre',
+          landmark: 'Mr. Biggs restaurant and fast food',
+          address: 'Mr. Biggs, Ṣoníbáre Str., Ọgbà, Lagos.',
+        },
+      },
+    };
+    let resStatusSpy;
+    let resSendSpy;
+
+    beforeAll(async (done) => {
+      req.params.ngoId = await ngoId;
+      resStatusSpy = spyOn(res, 'status').and.callThrough();
+      resSendSpy = spyOn(res, 'send');
+      await donateItem(req, res);
+      done();
+    });
+
+    afterAll(async (done) => {
+      DonationModel.deleteOne({ email: req.body.email }, () => done());
+    });
+
+    it('responds status 400', () => {
+      expect(resStatusSpy).toHaveBeenCalledWith(400);
+    });
+    it('responds with a validation error message', () => {
+      expect(resSendSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('when forced to relate donation to both NGO and event', () => {
+    const req = {
+      query: {
+        logistics: 'donor',
+      },
+      params: {
+        ngoId,
+      },
+      body: {
+        eventId: ngoId,
+        items: [{
+          name: 'Pencil',
+          desc: 'A pack of HB pencils',
+        }],
+        email: 'testdonor@testmail.com',
+        phone: '+2347065390558',
+        dateTime: new Date(Date.now() + (3600000 * 24 * 7)).toJSON(),
+      },
+    };
+    let resStatusSpy;
+    let resSendSpy;
+
+    beforeAll(async (done) => {
+      req.params.ngoId = await ngoId;
+      req.body.eventId = await ngoId;
+      resStatusSpy = spyOn(res, 'status').and.callThrough();
+      resSendSpy = spyOn(res, 'send');
+      await donateItem(req, res);
+      done();
+    });
+
+    afterAll(async (done) => {
+      DonationModel.deleteOne({ email: req.body.email }, () => done());
+    });
+
+    it('responds status 400', () => {
+      expect(resStatusSpy).toHaveBeenCalledWith(400);
+    });
+    it('responds with a validation error message', () => {
+      expect(resSendSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('when requested without specifying who handles logistics as a request query', () => {
     const req = {
       query: {},
