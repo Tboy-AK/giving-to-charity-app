@@ -10,6 +10,7 @@ const adminAuthsData = [
     phone: '+2348012345678',
     password: 'Password1234',
     role: 'admin',
+    activated: true,
   },
 ];
 

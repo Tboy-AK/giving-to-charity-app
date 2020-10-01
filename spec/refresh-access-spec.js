@@ -1,5 +1,5 @@
 const errResponse = require('../utils/error-response-handler');
-const { refreshAccess } = require('../controllers/session-controller')(errResponse);
+const { refreshAccess } = require('../controllers/auth-controller')(errResponse);
 const { id1: ngoId } = require('../seeders/data/ngos-data');
 const { id1: ngoAuthId } = require('../seeders/data/ngo-auths-data');
 

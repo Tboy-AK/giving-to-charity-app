@@ -15,11 +15,11 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
     const reqBody = req.body;
 
     // check that user exists
-    return AuthModel.findOne({ email: reqBody.email })
+    return AuthModel.findOne({ email: reqBody.email, activated: true, suspended: false })
       .then((authResult) => {
         if (!authResult) return errResponse(res, 401);
 
-        // compare user password
+        // confirm user password
         return compare(reqBody.password, authResult.password)
           .then(async (isPasswordValid) => {
             if (!isPasswordValid) return errResponse(res, 401, 'Incorrect password');
@@ -60,7 +60,7 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
             };
 
             let user;
-            let userRoleErr;
+            const userRoleErr = new Error('');
 
             switch (userRole) {
               case 'admin':
@@ -72,15 +72,22 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
                 break;
 
               case 'ngo':
-                user = await NGOModel.findOne({ authId })
-                  .then((ngo) => ngo)
+                user = await NGOModel.findOne(
+                  { authId, verified: true },
+                )
+                  .then((ngo) => {
+                    userRoleErr.message = 'Account not verified';
+                    userRoleErr.code = 'AuthError';
+                    if (!ngo) throw userRole;
+                    return ngo;
+                  })
                   .catch((err) => {
                     throw err;
                   });
                 break;
 
               default:
-                userRoleErr = new Error('Unrecognised user');
+                userRoleErr.message = 'Unrecognised user';
                 userRoleErr.code = 'AuthError';
                 throw userRoleErr;
             }
@@ -110,7 +117,100 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
       .catch((err) => errResponse(res, 500, null, err));
   };
 
-  return { userSignin };
+  const refreshAccess = async (req, res) => {
+    // validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError
+        .array({ onlyFirstError: true }));
+    }
+
+    const { authId, email, role } = req.body;
+
+    // create user access token
+    const userPayload = { authId, email };
+
+    const accessTokenOptions = {
+      algorithm: 'HS256',
+      audience: role,
+      expiresIn: 600,
+      issuer: 'GiveToCharity',
+    };
+    const accessToken = sign(
+      userPayload, process.env.RSA_PRIVATE_KEY, accessTokenOptions,
+    );
+
+    const refreshExpSeconds = 30 * 24 * 3600;
+    const refreshTokenOptions = { ...accessTokenOptions, expiresIn: refreshExpSeconds };
+    const refreshToken = sign(
+      userPayload,
+      process.env.RSA_PRIVATE_KEY,
+      refreshTokenOptions,
+    );
+
+    const version = process.env.VERSION || 'v1.0.0';
+    const cookieOptions = {
+      maxAge: refreshExpSeconds * 1000,
+      secure: false,
+      sameSite: 'none',
+      httpOnly: false,
+      path: `/api/${version}/auths/session`,
+      domain: req.hostname !== 'localhost' ? `.${req.hostname}` : 'localhost',
+    };
+
+    return res
+      .status(200)
+      .header('Authorization', accessToken)
+      .cookie('GiveToCharity-Refresh', refreshToken, cookieOptions)
+      .json({
+        userId: req.query.userId,
+        role,
+        message: 'Successfully logged in',
+        accessExp: accessTokenOptions.expiresIn,
+        refreshExp: refreshTokenOptions.expiresIn,
+      });
+  };
+
+  const activateUser = (req, res) => {
+    // validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError
+        .array({ onlyFirstError: true }));
+    }
+
+    // check that user exists
+    return AuthModel.findOneAndUpdate(
+      {
+        email: req.header.useraccesspayload.email,
+        activated: false,
+      },
+      {
+        activated: true,
+      },
+    )
+      .then((authDoc) => {
+        if (!authDoc) return errResponse(res, 401);
+
+        return res
+          .status(200)
+          .json({
+            message: 'You can now log in',
+            data: {},
+          });
+      })
+      .catch((err) => {
+        switch (err.code) {
+          case 'AuthError':
+            return errResponse(res, 403, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
+  };
+
+  return { activateUser, userSignin, refreshAccess };
 };
 
 module.exports = authController;
