@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const { hash, genSaltSync } = require('bcryptjs');
 const { validationResult } = require('express-validator');
+const { sign } = require('jsonwebtoken');
 const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
 const htmlWrapper = require('../utils/html-wrapper');
@@ -29,13 +30,33 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
         // save auth data to database
         const newAuth = new AuthModel(reqBody);
         return newAuth.save()
-          .then((authResult) => {
-            reqBody.authId = authResult._id;
+          .then((authDoc) => {
+            reqBody.authId = authDoc._id;
 
             // save admin data to database
             const newAdmin = new AdminModel(reqBody);
             return newAdmin.save()
               .then(() => {
+                // create user access token
+                const authId = authDoc._id;
+                const userPayload = {
+                  authId,
+                  email: authDoc.email,
+                };
+                const userRole = authDoc.role;
+                const accessTokenOptions = {
+                  algorithm: 'HS256',
+                  audience: userRole,
+                  expiresIn: 3600 * 24 * 7,
+                  issuer: 'GiveToCharity',
+                };
+                const authActivateToken = sign(
+                  userPayload, process.env.RSA_PRIVATE_KEY, accessTokenOptions,
+                );
+
+                // Send email notification to the new subscriber
+                const domain = `https://${process.env.DOMAIN}`;
+
                 const htmlFooter = `
                   <p>
                     Thanks,
@@ -59,7 +80,13 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
                       <span style='background-color: gray;'> Give To Charity</span>,
                       and you are required to change your default password.
                     </p>
-                    <br/>
+                    <p>
+                      But before then, activate your account at
+                      <a href='${domain}/auth/activate/${authActivateToken}'>
+                        ${domain}/auth/activate/${authActivateToken}
+                      </a>. The link expires in 7 days.
+                    </p>
+                    <h2>Login Details</h2>
                     <p>
                       Username: ${email}
                     </p>

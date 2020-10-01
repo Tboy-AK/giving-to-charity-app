@@ -12,7 +12,8 @@ const validators = [
   header('useraccesspayload.email')
     .notEmpty()
     .withMessage('Not authorized')
-    .isEmail('Invalid access'),
+    .isEmail()
+    .withMessage('Invalid access'),
 ];
 
 module.exports = validators;

@@ -43,6 +43,7 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
               .find(
                 {
                   ngoId: { $in: ngoIdsBySDG },
+                  sdg: { $nin: sdgs },
                 },
                 '_id name ngoId desc sdg dateTime venue website needs',
               )

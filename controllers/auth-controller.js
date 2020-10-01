@@ -55,7 +55,7 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
               secure: false,
               sameSite: 'none',
               httpOnly: false,
-              path: `/api/${version}/auth/session`,
+              path: `/api/${version}/auth/refresh`,
               domain: req.hostname !== 'localhost' ? `.${req.hostname}` : 'localhost',
             };
 
@@ -78,7 +78,7 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
                   .then((ngo) => {
                     userRoleErr.message = 'Account not verified';
                     userRoleErr.code = 'AuthError';
-                    if (!ngo) throw userRole;
+                    if (!ngo) throw userRoleErr;
                     return ngo;
                   })
                   .catch((err) => {
@@ -97,11 +97,13 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
               .header('Authorization', accessToken)
               .cookie('GiveToCharity-Refresh', refreshToken, cookieOptions)
               .json({
-                userId: user._id,
-                role: userRole,
                 message: 'Successfully logged in',
-                accessExp: accessTokenOptions.expiresIn,
-                refreshExp: refreshTokenOptions.expiresIn,
+                data: {
+                  userId: user._id,
+                  role: userRole,
+                  accessExp: accessTokenOptions.expiresIn,
+                  refreshExp: refreshTokenOptions.expiresIn,
+                },
               });
           })
           .catch((err) => {
@@ -154,7 +156,7 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
       secure: false,
       sameSite: 'none',
       httpOnly: false,
-      path: `/api/${version}/auths/session`,
+      path: `/api/${version}/auths/refresh`,
       domain: req.hostname !== 'localhost' ? `.${req.hostname}` : 'localhost',
     };
 
@@ -163,11 +165,13 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
       .header('Authorization', accessToken)
       .cookie('GiveToCharity-Refresh', refreshToken, cookieOptions)
       .json({
-        userId: req.query.userId,
-        role,
         message: 'Successfully logged in',
-        accessExp: accessTokenOptions.expiresIn,
-        refreshExp: refreshTokenOptions.expiresIn,
+        data: {
+          userId: req.query.userId,
+          role,
+          accessExp: accessTokenOptions.expiresIn,
+          refreshExp: refreshTokenOptions.expiresIn,
+        },
       });
   };
 
@@ -182,7 +186,7 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
     // check that user exists
     return AuthModel.findOneAndUpdate(
       {
-        email: req.header.useraccesspayload.email,
+        email: req.headers.useraccesspayload.email,
         activated: false,
       },
       {

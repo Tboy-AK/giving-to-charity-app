@@ -14,7 +14,7 @@ const authAdmin = (req, res, next) => verify(
       if (err instanceof TokenExpiredError) return errResponse(res, 403, 'Session expired');
       return errResponse(res, 403, null, err);
     }
-    req.headers.useraccesspayload = JSON.stringify(payload);
+    req.headers.useraccesspayload = payload;
     return next();
   },
 );

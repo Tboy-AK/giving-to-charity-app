@@ -24,9 +24,9 @@ const AuthRouter = Router();
 AuthRouter.post('/auth', authValidator, userSignin);
 
 // Refresh user access
-AuthRouter.post('/auth/session', authExpAccess, cookieParser(), authRefresh, refreshAccess);
+AuthRouter.post('/auth/refresh', authExpAccess, cookieParser(), authRefresh, refreshAccess);
 
 // Activate user
-AuthRouter.post('/auth/activate/:authActivateToken', authActivateAccess, authActivateValidator, activateUser);
+AuthRouter.patch('/auth/activate/:authActivateToken', authActivateAccess, authActivateValidator, activateUser);
 
 module.exports = { AuthRouter };

@@ -47,7 +47,7 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
                 const accessTokenOptions = {
                   algorithm: 'HS256',
                   audience: userRole,
-                  expiresIn: 600,
+                  expiresIn: 3600 * 24 * 7,
                   issuer: 'GiveToCharity',
                 };
                 const authActivateToken = sign(
@@ -84,7 +84,7 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
                       But before then, activate your account at 
                       <a href='${domain}/auth/activate/${authActivateToken}'>
                         ${domain}/auth/activate/${authActivateToken}
-                      </a>
+                      </a>.
                     </p>
                   </main>
                 `;
