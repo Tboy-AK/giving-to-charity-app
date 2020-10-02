@@ -27,7 +27,7 @@ const AuthSchema = new mongoose.Schema({
     lowercase: true,
     enum: ['superAdmin', 'admin', 'ngo'],
   },
-  active: {
+  activated: {
     type: Boolean,
     default: false,
     required: true,

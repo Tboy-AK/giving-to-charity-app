@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const authNGO = require('../middleware/auth-ngo');
+const authNGO = require('../middleware/auth-ngo-middleware');
 const eventValidator = require('../middleware/request-validators/ngo-post-event-validator');
 const errResponse = require('../utils/error-response-handler');
 const NGOModel = require('../models/mongodb-models/ngo-model');

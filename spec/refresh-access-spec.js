@@ -1,5 +1,10 @@
 const errResponse = require('../utils/error-response-handler');
-const { refreshAccess } = require('../controllers/session-controller')(errResponse);
+const AuthModel = require('../models/mongodb-models/auth-model');
+const AdminModel = require('../models/mongodb-models/admin-model');
+const NGOModel = require('../models/mongodb-models/ngo-model');
+const { refreshAccess } = require('../controllers/auth-controller')(
+  errResponse, AuthModel, { AdminModel, NGOModel },
+);
 const { id1: ngoId } = require('../seeders/data/ngos-data');
 const { id1: ngoAuthId } = require('../seeders/data/ngo-auths-data');
 

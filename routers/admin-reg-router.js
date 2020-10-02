@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const authAdmin = require('../middleware/auth-admin');
+const authAdmin = require('../middleware/auth-admin-middleware');
 const adminRegValidator = require('../middleware/request-validators/admin-reg-validator');
 const errResponse = require('../utils/error-response-handler');
 const AuthModel = require('../models/mongodb-models/auth-model');

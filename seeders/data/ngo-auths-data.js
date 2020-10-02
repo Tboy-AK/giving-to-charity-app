@@ -10,6 +10,7 @@ const ngoAuthsData = [
     phone: '+2348012345679',
     password: 'Password1234',
     role: 'ngo',
+    activated: true,
   },
 ];
 
