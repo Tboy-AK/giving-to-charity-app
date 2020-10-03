@@ -67,7 +67,7 @@ describe('POST /api/v1.0.0/subscriber', () => {
       resStatusSpy = spyOn(res, 'status').and.callThrough();
       resJSONSpy = spyOn(res, 'json');
       await createSubscriber(req, res);
-      done();
+      return done();
     });
 
     afterAll(async (done) => {

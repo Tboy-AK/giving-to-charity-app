@@ -17,9 +17,12 @@ const validators = [
     .isArray({ min: 1 })
     .withMessage('Needs must have at least 1 item'),
   body('items.*.name')
+    .notEmpty()
+    .withMessage('Need must have name')
     .isString()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('Need must have name'),
+    .withMessage('Need items name must be a string')
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Need item name must be between 2 and 50 characters long'),
   body('items.*.desc')
     .isString()
     .notEmpty()

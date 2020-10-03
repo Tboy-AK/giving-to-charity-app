@@ -9,7 +9,7 @@ const SocialMediaSchema = new mongoose.Schema({
   url: {
     type: String,
     minlength: 5,
-    maxlength: 100,
+    maxlength: 255,
     trim: ' ',
   },
 }, { timestamps: true });

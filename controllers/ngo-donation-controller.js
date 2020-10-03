@@ -213,7 +213,77 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
       });
   };
 
-  return { donateItem };
+  const listDonations = async (req, res) => {
+    // Validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError.array({ onlyFirstError: true }));
+    }
+
+    const { page, limit } = req.query;
+
+    return DonationModel
+      .find(
+        { ngoId: req.params.ngoId },
+        '-updatedAt',
+        { skip: page * limit, limit },
+      )
+      .then((donationDocs) => res
+        .status(200)
+        .json({
+          message: 'Success',
+          data: donationDocs,
+          count: donationDocs.length,
+        }))
+      .catch((err) => {
+        switch (err) {
+          case 'ValidationError':
+            return errResponse(res, 400, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
+  };
+
+  const viewDonation = async (req, res) => {
+    // Validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError.array({ onlyFirstError: true }));
+    }
+
+    const { ngoId, donationId } = req.params;
+
+    return DonationModel
+      .findOne({ _id: donationId, ngoId }, '-updatedAt')
+      .then((donationDoc) => {
+        if (!donationDoc) {
+          const controllerError = new Error('Resource not found');
+          controllerError.name = 'NotFoundError';
+        }
+        return res
+          .status(200)
+          .json({
+            message: 'Success',
+            data: donationDoc,
+          });
+      })
+      .catch((err) => {
+        switch (err.name) {
+          case 'NotFoundError':
+            return errResponse(res, 404);
+
+          case 'ValidationError':
+            return errResponse(res, 400, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
+  };
+
+  return { donateItem, listDonations, viewDonation };
 };
 
 module.exports = donationController;

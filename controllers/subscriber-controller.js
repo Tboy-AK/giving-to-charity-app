@@ -1,5 +1,7 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-underscore-dangle */
 const { validationResult } = require('express-validator');
+const events = require('events');
 const logger = require('../utils/winston-logger');
 const mailer = require('../utils/email-handler');
 const htmlWrapper = require('../utils/html-wrapper');
@@ -25,6 +27,89 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
         const { sdgs, ngos: ngoIds } = reqBody;
         const ngoEvents = [];
 
+        // Set async response handling
+        const controllerProcessEmitter = new events.EventEmitter();
+        let processCount = 0;
+        let totalProcessCount = 3;
+        const finishedResponse = () => {
+          if (processCount === totalProcessCount) {
+            // Send email notification to the new subscriber
+            const domain = `https://${process.env.DOMAIN}`;
+
+            const eventHTMLArticles = ngoEvents.length === 0 ? '' : ngoEvents.map((ngoEvent) => ngoEvent
+              .map(({
+                _id, ngoId, desc, name, dateTime,
+              }) => {
+                const [date, time] = dateTime.toJSON().split('T');
+                return (`<article class='card'>
+                  <div class='card-body'>
+                    <h5 class='card-title'>${name}</h5>
+                    <h6 class='card-subtitle mb-2 text-muted'>
+                      <time datetime='${date}' class='badge badge-secondary' style='margin-right: 3em;'>${date}</time>
+                      <time datetime='${time.replace('Z', '')}' class='badge badge-secondary'>${time}</time>
+                    </h6>
+                    <p><a href='${domain}/ngos/${ngoId._id}/events/${_id}' class='card-link'>
+                      ${domain}/ngos/${ngoId._id}/events/${_id}
+                    </a></p>
+                    <p class='card-text'>${desc}</p>
+                  </div>
+                </article>`);
+              }).join('')).join('');
+            const htmlFooter = `
+              <p>
+                Cheers,
+                <br/>
+                The 
+                <span style='background-color: gray;'> Give To Charity</span>
+                team.
+              </p>
+            `;
+
+            const { email } = reqBody;
+            const subject = 'Latest Charity Subscriber';
+            const text = 'Guess who\'s our latest subscriber!';
+            const htmlBody = `
+              <main class='container'>
+                <section class='Intro container'>
+                  <p>
+                    Dear Subscriber,
+                  </p>
+                  <br/>
+                  <p>
+                    Congratulations! You can now receive unhindered updates on activities regarding your choice interests as indicated on our website at 
+                    <a href='${domain}#subscribe'>
+                      Give To Charity
+                    </a>.
+                  </p>
+                </section>
+                ${ngoEvents.length > 0 ? `<section class='News container'>
+                  <section class='Events container'>
+                    <h2>
+                      Below are some news you may be interested in
+                    </h2>
+                    ${eventHTMLArticles}
+                  </section>
+                </section>` : ''}
+              </main>
+            `;
+            const html = htmlWrapper(htmlBody, 'Subscription', htmlFooter);
+            mailer(email, subject, text, html)
+              .catch((err) => logger.error(err.message));
+
+            return res
+              .status(201)
+              .json({
+                message: `Your subscription has been confirmed.
+                You will now have access to updates on your specified interests at ${email}.
+                This does not prevent you from adding more things that interest you here`,
+              });
+          }
+          return null;
+        };
+        const erroredResponse = (err) => errResponse(res, 500, null, err);
+        controllerProcessEmitter.on('complete', finishedResponse);
+        controllerProcessEmitter.on('error', erroredResponse);
+
         if (sdgs && sdgs.length > 0) {
         // Get list of NGOs by the specified SDGs
           const ngosByRequestSDGs = await NGOModel
@@ -34,12 +119,14 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
             );
 
           if (ngosByRequestSDGs && ngosByRequestSDGs.length > 0) {
-            // Get IDs of a list of NGOs by their SDGs
-            // This would be used to get their upcoming events
+            // Get upcoming events of NGOs
+
+            // Get IDs of NGOs by their SDGs
             const ngoIdsBySDG = ngosByRequestSDGs.map(({ _id }) => _id);
 
-            // Get list of events by the list of NGOs based on the specified SDGs
-            const ngoEventsByNGOs = await EventModel
+            // Get events of NGOs,
+            // which are not directly associated with the subscriber specified SDGs
+            EventModel
               .find(
                 {
                   ngoId: { $in: ngoIdsBySDG },
@@ -49,110 +136,81 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
               )
               .where('dateTime').gt(Date.now())
               .limit(10)
-              .populate('ngoId', 'name');
-
-            if (ngoEventsByNGOs && ngoEventsByNGOs.length > 0) ngoEvents.push(ngoEventsByNGOs);
+              .populate('ngoId', 'name')
+              .then((ngoEventsByNGOs) => {
+                ++processCount;
+                if (ngoEventsByNGOs && ngoEventsByNGOs.length > 0) {
+                  ngoEvents.push(ngoEventsByNGOs);
+                }
+                return controllerProcessEmitter.emit('complete');
+              })
+              .catch((ngoEventsByNGOsErr) => {
+                ++processCount;
+                logger.error(ngoEventsByNGOsErr.message);
+                return controllerProcessEmitter.emit('complete');
+              });
+          } else {
+            --totalProcessCount;
+            controllerProcessEmitter.emit('complete');
           }
 
-          // Get list of events by the list of SDGs specified by the user
-          const ngoEventsBySDG = await EventModel
+          // Get events by the list of subscriber specified SDGs,
+          // whose NGOs are not subscriber specified
+          await EventModel
             .find(
-              { sdg: { $in: sdgs } },
+              {
+                sdg: { $in: sdgs },
+                ngoId: { $nin: ngoIds },
+              },
               '_id name desc sdg dateTime venue website needs',
             )
             .where('dateTime').gt(Date.now())
             .limit(10)
-            .populate('ngoId', 'name');
-
-          if (ngoEventsBySDG && ngoEventsBySDG.length > 0) ngoEvents.push(ngoEventsBySDG);
+            .populate('ngoId', 'name')
+            .then((ngoEventsBySDG) => {
+              ++processCount;
+              if (ngoEventsBySDG && ngoEventsBySDG.length > 0) {
+                ngoEvents.push(ngoEventsBySDG);
+              }
+              return controllerProcessEmitter.emit('complete');
+            })
+            .catch((ngoEventsBySDGErr) => {
+              ++processCount;
+              logger.error(ngoEventsBySDGErr.message);
+              return controllerProcessEmitter.emit('complete');
+            });
+        } else {
+          totalProcessCount -= 2;
+          controllerProcessEmitter.emit('complete');
         }
 
         if (ngoIds && ngoIds.length > 0) {
-        // Get list of events by the list of NGOs specified by the user
-          const ngoEventsByRequestNGOs = await EventModel
+        // Get events by the list of subscriber specified NGOs
+          return EventModel
             .find(
               { ngoId: { $in: ngoIds } },
               '_id name ngoId desc sdg dateTime venue website needs',
             )
             .where('dateTime').gt(Date.now())
             .limit(10)
-            .populate('ngoId', 'name');
-
-          if (
-            ngoEventsByRequestNGOs && ngoEventsByRequestNGOs.length > 0
-          ) ngoEvents.push(ngoEventsByRequestNGOs);
+            .populate('ngoId', 'name')
+            .then((ngoEventsByRequestNGOs) => {
+              ++processCount;
+              if (
+                ngoEventsByRequestNGOs && ngoEventsByRequestNGOs.length > 0
+              ) {
+                ngoEvents.push(ngoEventsByRequestNGOs);
+              }
+              return controllerProcessEmitter.emit('complete');
+            })
+            .catch((ngoEventsByRequestNGOsErr) => {
+              ++processCount;
+              logger.error(ngoEventsByRequestNGOsErr.message);
+              return controllerProcessEmitter.emit('complete');
+            });
         }
-
-        // Send email notification to the new subscriber
-        const domain = `https://${process.env.DOMAIN}`;
-
-        const eventHTMLArticles = ngoEvents.map((ngoEvent) => ngoEvent
-          .map(({
-            _id, ngoId, desc, name, dateTime,
-          }) => {
-            const [date, time] = dateTime.toJSON().split('T');
-            return (`<article class='card'>
-              <div class='card-body'>
-                <h5 class='card-title'>${name}</h5>
-                <h6 class='card-subtitle mb-2 text-muted'>
-                  <time datetime='${date}' class='badge badge-secondary' style='margin-right: 3em;'>${date}</time>
-                  <time datetime='${time.replace('Z', '')}' class='badge badge-secondary'>${time}</time>
-                </h6>
-                <p><a href='${domain}/ngos/${ngoId._id}/events/${_id}' class='card-link'>
-                  ${domain}/ngos/${ngoId._id}/events/${_id}
-                </a></p>
-                <p class='card-text'>${desc}</p>
-              </div>
-            </article>`);
-          }).join('')).join('');
-        const htmlFooter = `
-          <p>
-            Cheers,
-            <br/>
-            The 
-            <span style='background-color: gray;'> Give To Charity</span>
-            team.
-          </p>
-        `;
-
-        const { email } = reqBody;
-        const subject = 'Latest Charity Subscriber';
-        const text = 'Guess who\'s our latest subscriber!';
-        const htmlBody = `
-          <main class='container'>
-            <section class='Intro container'>
-              <p>
-                Dear Subscriber,
-              </p>
-              <br/>
-              <p>
-                Congratulations! You can now receive unhindered updates on activities regarding your choice interests as indicated on our website at 
-                <a href='${domain}#subscribe'>
-                  Give To Charity
-                </a>.
-              </p>
-            </section>
-            ${ngoEvents.length > 0 ? `<section class='News container'>
-              <section class='Events container'>
-                <h2>
-                  Below are some news you may be interested in
-                </h2>
-                ${eventHTMLArticles}
-              </section>
-            </section>` : ''}
-          </main>
-        `;
-        const html = htmlWrapper(htmlBody, 'Subscription', htmlFooter);
-        mailer(email, subject, text, html)
-          .catch((err) => logger.error(err.message));
-
-        return res
-          .status(201)
-          .json({
-            message: `Your subscription has been confirmed.
-            You will now have access to updates on your specified interests at ${email}.
-            This does not prevent you from adding more things that interest you here`,
-          });
+        --totalProcessCount;
+        return controllerProcessEmitter.emit('complete');
       })
       .catch((err) => {
         if (err.code) {

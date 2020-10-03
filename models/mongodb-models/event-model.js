@@ -129,7 +129,7 @@ const EventSchema = new Schema({
     type: String,
     required: true,
     minlength: 12,
-    maxlength: 255,
+    maxlength: 500,
   },
   mission: {
     type: String,
