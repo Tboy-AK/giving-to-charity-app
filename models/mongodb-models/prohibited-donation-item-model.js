@@ -13,7 +13,7 @@ const ProhibitedDonationItemSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 12,
-    maxlength: 1023,
+    maxlength: 1000,
   },
 }, { timestamps: true });
 const ProhibitedDonationItemModel = mongoose.model('ProhibitedDonationItem', ProhibitedDonationItemSchema);

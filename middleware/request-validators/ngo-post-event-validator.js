@@ -19,6 +19,8 @@ const validators = [
     .withMessage('Name must be between 10 and 100 characters inclusive')
     .escape(),
   body('dateTime')
+    .isString()
+    .trim(' ')
     .notEmpty()
     .withMessage('Date and time is required')
     .matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?/)
@@ -28,8 +30,8 @@ const validators = [
     .trim(' ')
     .notEmpty()
     .withMessage('Description is required')
-    .isLength({ min: 10, max: 255 })
-    .withMessage('Description must be between 10 and 255 characters inclusive')
+    .isLength({ min: 10, max: 500 })
+    .withMessage('Description must be between 10 and 500 characters inclusive')
     .escape(),
   body('onlinePlatforms')
     .optional()
@@ -39,16 +41,15 @@ const validators = [
     .isString()
     .trim(' ')
     .notEmpty()
-    .withMessage('Online platform must have name and url')
+    .withMessage('Online platform must have name')
     .isLength({ min: 2, max: 30 })
-    .withMessage('Online platform must have URI iwth approriate length'),
+    .withMessage('Online platform name be between 2 and 30 char long'),
   body('onlinePlatforms.*.url')
     .isURL()
+    .withMessage('Invalid URL')
     .trim(' ')
-    .notEmpty()
-    .withMessage('Online platform must have URI')
     .isLength({ min: 15, max: 255 })
-    .withMessage('Online platform must have URI iwth approriate length'),
+    .withMessage('Online platform URL must be between 15 and 255 char long'),
   body('venue')
     .optional()
     .notEmpty()
@@ -143,16 +144,16 @@ const validators = [
   body('needs')
     .optional()
     .isArray({ min: 1, max: 100 })
-    .withMessage('Needs must have at least 1 item'),
+    .withMessage('Need items must be between 1 and 100'),
   body('needs.*.name')
     .isString()
     .isLength({ min: 2, max: 100 })
-    .withMessage('Need must have name'),
+    .withMessage('Need item name must be between 2 and 100 characters long'),
   body('needs.*.desc')
     .isString()
     .notEmpty()
-    .isLength({ min: 12, max: 100 })
-    .withMessage('Description must be between 12 and 100 characters long'),
+    .isLength({ min: 12, max: 255 })
+    .withMessage('Description must be between 12 and 255 characters long'),
   body('needs.*.quantity')
     .optional()
     .isInt({ min: 1 })

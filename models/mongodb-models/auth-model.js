@@ -6,6 +6,7 @@ const AuthSchema = new mongoose.Schema({
     required: true,
     unique: true,
     lowercase: true,
+    maxlength: 100,
     match: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
   },
   phone: {

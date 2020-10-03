@@ -1,12 +1,22 @@
 const { Router } = require('express');
 const ngoDonationValidator = require('../middleware/request-validators/ngo-donation-validator');
+const ngoListDonationValidator = require('../middleware/request-validators/ngo-list-donation-validator');
+const ngoViewDonationValidator = require('../middleware/request-validators/ngo-view-donation-validator');
+const authNgo = require('../middleware/auth-ngo-middleware');
 const errResponse = require('../utils/error-response-handler');
 const DonationModel = require('../models/mongodb-models/donation-model');
 const NGOModel = require('../models/mongodb-models/ngo-model');
-const { donateItem } = require('../controllers/ngo-donation-controller')(errResponse, DonationModel, NGOModel);
+const { donateItem, listDonations, viewDonation } = require('../controllers/ngo-donation-controller')(errResponse, DonationModel, NGOModel);
 
 const NGODonationRouter = Router();
 
-NGODonationRouter.route('/ngo/:ngoId/donation').post(ngoDonationValidator, donateItem);
+NGODonationRouter
+  .route('/ngo/:ngoId/donation')
+  .post(ngoDonationValidator, donateItem)
+  .get(authNgo, ngoListDonationValidator, listDonations);
+
+NGODonationRouter
+  .route('/ngo/:ngoId/donation/:donationId')
+  .get(authNgo, ngoViewDonationValidator, viewDonation);
 
 module.exports = { NGODonationRouter };

@@ -14,7 +14,7 @@ const DonationItemSchema = new Schema({
   desc: {
     type: String,
     minlength: 5,
-    maxlength: 100,
+    maxlength: 255,
     trim: ' ',
   },
   quantity: {
@@ -25,7 +25,7 @@ const DonationItemSchema = new Schema({
   purpose: {
     type: String,
     minlength: 5,
-    maxlength: 100,
+    maxlength: 255,
     trim: ' ',
   },
 }, { timestamps: true });

@@ -13,11 +13,13 @@ const AdminSchema = new Schema({
     type: String,
     required: true,
     minlength: 2,
+    maxlength: 30,
   },
   lastName: {
     type: String,
     required: true,
     minlength: 2,
+    maxlength: 30,
   },
 }, { timestamps: true });
 const AdminModel = mongoose.model('Admin', AdminSchema);

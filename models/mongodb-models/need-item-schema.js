@@ -14,7 +14,7 @@ const NeedItemSchema = new Schema({
   desc: {
     type: String,
     minlength: 5,
-    maxlength: 100,
+    maxlength: 255,
     trim: ' ',
   },
   quantity: {
@@ -41,7 +41,7 @@ const NeedItemSchema = new Schema({
   purpose: {
     type: String,
     minlength: 5,
-    maxlength: 100,
+    maxlength: 255,
     trim: ' ',
   },
 }, { timestamps: true });
