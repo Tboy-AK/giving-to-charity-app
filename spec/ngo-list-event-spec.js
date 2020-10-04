@@ -1,30 +1,30 @@
 const errResponse = require('../utils/error-response-handler');
-const DonationModel = require('../models/mongodb-models/donation-model');
+const NGOModel = require('../models/mongodb-models/ngo-model');
 const EventModel = require('../models/mongodb-models/event-model');
-const { listDonations } = require('../controllers/event-donation-controller')(errResponse, DonationModel, EventModel);
+const { listEvents } = require('../controllers/ngo-event-controller')(errResponse, NGOModel, EventModel);
 
-describe('GET /api/v1.0.0/event/:eventId/donation', () => {
+describe('GET /api/v1.0.0/ngo/:ngoId/event', () => {
   const res = {
     status: (statusCode) => ({ statusCode, ...res }),
     json: (message) => ({ message, ...res }),
     send: (message) => ({ message, ...res }),
   };
 
-  let eventId;
+  let ngoId;
 
   beforeAll(async (done) => {
-    await EventModel.findOne({ name: 'Child Dream Tech Power Camp 1.0' }, '_id', (err, doc) => {
+    await NGOModel.findOne({ name: 'Child Dreams Foundation' }, '_id', (err, doc) => {
       if (err) throw err; else if (!doc) throw new Error('null');
       // eslint-disable-next-line no-underscore-dangle
-      else eventId = doc._id;
+      else ngoId = doc._id;
       done();
     });
   });
 
-  describe('when requested with Event ID URL parameter', () => {
+  describe('when requested with NGO ID URL parameter', () => {
     const req = {
       params: {
-        eventId,
+        ngoId,
       },
       query: {
         page: 0,
@@ -35,10 +35,10 @@ describe('GET /api/v1.0.0/event/:eventId/donation', () => {
     let resJSONSpy;
 
     beforeAll(async (done) => {
-      req.params.eventId = await eventId;
+      req.params.ngoId = await ngoId;
       resStatusSpy = spyOn(res, 'status').and.callThrough();
       resJSONSpy = spyOn(res, 'json');
-      await listDonations(req, res);
+      await listEvents(req, res);
       done();
     });
 

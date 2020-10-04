@@ -325,7 +325,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=ngo', () => {
 
   beforeAll(async (done) => {
     await NGOModel.findOne({ name: 'Child Dreams Foundation' }, '_id', (err, doc) => {
-      if (err) throw err;
+      if (err) throw err; else if (!doc) throw new Error('null');
       // eslint-disable-next-line no-underscore-dangle
       else ngoId = doc._id;
       done();

@@ -13,26 +13,15 @@ const validators = [
     ))
     .withMessage('Invalid access'),
   param('ngoId')
-    .if((val, { req }) => !(
-      !val && !req.eventId
-    ) && !req.eventId)
     .notEmpty()
     .withMessage('NGO ID is required')
     .isMongoId()
     .withMessage('Invalid NGO ID'),
   param('eventId')
-    .if((val, { req }) => !(
-      !val && !req.ngoId
-    ) && !req.ngoId)
     .notEmpty()
     .withMessage('Event ID is required')
     .isMongoId()
     .withMessage('Invalid Event ID'),
-  param('donationId')
-    .notEmpty()
-    .withMessage('Donation ID is required')
-    .isMongoId()
-    .withMessage('Invalid donation ID'),
 ];
 
 module.exports = validators;
