@@ -1,18 +1,9 @@
-const { header, param, query } = require('express-validator');
-const { mongoose: { Types } } = require('../../configs/mongodb-config');
+const { query } = require('express-validator');
 
-// GET /ngo/:ngoId/donation?page&limit
-// GET /ngo/:ngoId/event/:eventId/donation?page&limit
+// GET /event?page&limit|ngo
 const validators = [
-  header('useraccesspayload')
-    .notEmpty()
-    .withMessage('Not authorized')
-    .custom((val) => (
-      Types.ObjectId(val.authId)
-      && Types.ObjectId(val.authId).toHexString() === val.authId
-    ))
-    .withMessage('Invalid access'),
-  param('ngoId')
+  query('ngoId')
+    .optional()
     .notEmpty()
     .withMessage('NGO ID is required')
     .isMongoId()

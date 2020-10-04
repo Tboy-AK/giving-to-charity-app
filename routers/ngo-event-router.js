@@ -22,7 +22,6 @@ NGOEventRouter
 
 NGOEventRouter
   .route('/ngo/:ngoId/event/:eventId')
-  .post(eventValidator, createEvent)
   .get(viewEventValidator, viewEvent);
 
 module.exports = { NGOEventRouter };

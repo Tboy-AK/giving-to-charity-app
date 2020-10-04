@@ -169,6 +169,7 @@ const eventController = (errResponse, NGOModel, EventModel) => {
         if (!eventDoc) {
           const controllerError = new Error('Resource not found');
           controllerError.name = 'NotFoundError';
+          throw controllerError;
         }
         return res
           .status(200)

@@ -1,44 +1,44 @@
+/* eslint-disable no-underscore-dangle */
 const errResponse = require('../utils/error-response-handler');
 const NGOModel = require('../models/mongodb-models/ngo-model');
 const EventModel = require('../models/mongodb-models/event-model');
-const { listEvents } = require('../controllers/ngo-event-controller')(errResponse, NGOModel, EventModel);
+const { viewEvent } = require('../controllers/event-controller')(errResponse, EventModel);
 
-describe('GET /api/v1.0.0/ngo/:ngoId/event?page&limit', () => {
+describe('GET /api/v1.0.0/event/:eventId', () => {
   const res = {
     status: (statusCode) => ({ statusCode, ...res }),
     json: (message) => ({ message, ...res }),
     send: (message) => ({ message, ...res }),
   };
 
-  let ngoId;
+  let eventId;
 
   beforeAll(async (done) => {
-    await NGOModel.findOne({ name: 'Child Dreams Foundation' }, '_id', (err, doc) => {
-      if (err) throw err; else if (!doc) throw new Error('null');
-      // eslint-disable-next-line no-underscore-dangle
-      else ngoId = doc._id;
-      done();
+    NGOModel.findOne({ name: 'Child Dreams Foundation' }, '_id', (ngoErr, ngoDoc) => {
+      if (ngoErr || !ngoDoc) throw ngoErr; else if (!ngoDoc) throw new Error('null');
+
+      EventModel.findOne({ ngoId: ngoDoc._id }, '_id', (eventErr, eventDoc) => {
+        if (eventErr) throw eventErr; else if (!eventDoc) throw new Error('null');
+        else eventId = eventDoc._id;
+        done();
+      });
     });
   });
 
-  describe('when requested with NGO ID URL parameter', () => {
+  describe('when requested with NGO ID and event ID URL parameters', () => {
     const req = {
       params: {
-        ngoId,
-      },
-      query: {
-        page: 0,
-        limit: 10,
+        eventId,
       },
     };
     let resStatusSpy;
     let resJSONSpy;
 
     beforeAll(async (done) => {
-      req.params.ngoId = await ngoId;
+      req.params.eventId = await eventId;
       resStatusSpy = spyOn(res, 'status').and.callThrough();
       resJSONSpy = spyOn(res, 'json');
-      await listEvents(req, res);
+      await viewEvent(req, res);
       done();
     });
 
