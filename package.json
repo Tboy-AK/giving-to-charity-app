@@ -4,11 +4,11 @@
   "description": "A platform that fosters an easy donation process of money or materials to accredited and trusted organisations that facilitate social welfare activities",
   "main": "server.js",
   "scripts": {
-    "pretest": "node ./seeders/seed-up.js",
-    "test": "jasmine",
-    "posttest": "node ./seeders/seed-down.js",
+    "pretest": "env NODE_ENV=test node ./seeders/seed-up.js",
+    "test": "env NODE_ENV=test jasmine",
+    "posttest": "env NODE_ENV=test node ./seeders/seed-down.js",
     "start": "node server.js",
-    "dev": "nodemon server.js -e js,mjs,json,jsx"
+    "dev": "env NODE_ENV=development nodemon server.js -e js,mjs,json,jsx"
   },
   "repository": {
     "type": "git",

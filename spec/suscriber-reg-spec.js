@@ -15,7 +15,7 @@ describe('POST /api/v1.0.0/subscriber', () => {
 
   beforeAll(async (done) => {
     NGOModel.findOne({ name: 'Child Dreams Foundation' }, '_id', async (err, doc) => {
-      if (err) throw err;
+      if (err) throw err; else if (!doc) throw new Error('null');
       // eslint-disable-next-line no-underscore-dangle
       else ngoId = doc._id;
       done();

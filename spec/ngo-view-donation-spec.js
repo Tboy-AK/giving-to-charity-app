@@ -15,11 +15,11 @@ describe('GET /api/v1.0.0/ngo/:ngoId/donation/:donationId', () => {
 
   beforeAll(async (done) => {
     NGOModel.findOne({ name: 'Child Dreams Foundation' }, '_id', (ngoErr, ngoDoc) => {
-      if (ngoErr) throw ngoErr;
+      if (ngoErr) throw ngoErr; else if (!ngoDoc) throw new Error('null');
       // eslint-disable-next-line no-underscore-dangle
       else ngoId = ngoDoc._id;
       DonationModel.findOne({ ngoId }, '_id', (donationErr, donationDoc) => {
-        if (donationErr) throw donationErr;
+        if (donationErr) throw donationErr; else if (!donationDoc) throw new Error('null');
         // eslint-disable-next-line no-underscore-dangle
         else donationId = donationDoc._id;
         done();

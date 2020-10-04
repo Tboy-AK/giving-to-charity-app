@@ -121,7 +121,77 @@ const eventController = (errResponse, NGOModel, EventModel) => {
       });
   };
 
-  return { createEvent };
+  const listEvents = async (req, res) => {
+    // Validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError.array({ onlyFirstError: true }));
+    }
+
+    const { page, limit } = req.query;
+
+    return EventModel
+      .find(
+        { ngoId: req.params.ngoId },
+        '-updatedAt',
+        { skip: page * limit, limit },
+      )
+      .then((eventDocs) => res
+        .status(200)
+        .json({
+          message: 'Success',
+          data: eventDocs,
+          count: eventDocs.length,
+        }))
+      .catch((err) => {
+        switch (err) {
+          case 'ValidationError':
+            return errResponse(res, 400, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
+  };
+
+  const viewEvent = async (req, res) => {
+    // Validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError.array({ onlyFirstError: true }));
+    }
+
+    const { ngoId, eventId } = req.params;
+
+    return EventModel
+      .findOne({ _id: eventId, ngoId }, '-updatedAt')
+      .then((eventDoc) => {
+        if (!eventDoc) {
+          const controllerError = new Error('Resource not found');
+          controllerError.name = 'NotFoundError';
+        }
+        return res
+          .status(200)
+          .json({
+            message: 'Success',
+            data: eventDoc,
+          });
+      })
+      .catch((err) => {
+        switch (err.name) {
+          case 'NotFoundError':
+            return errResponse(res, 404);
+
+          case 'ValidationError':
+            return errResponse(res, 400, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
+  };
+
+  return { createEvent, listEvents, viewEvent };
 };
 
 module.exports = eventController;

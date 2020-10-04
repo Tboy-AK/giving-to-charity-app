@@ -15,11 +15,11 @@ describe('GET /api/v1.0.0/event/:eventId/donation/:donationId', () => {
 
   beforeAll(async (done) => {
     EventModel.findOne({ name: 'Child Dream Tech Power Camp 1.0' }, '_id', (eventErr, eventDoc) => {
-      if (eventErr) throw eventErr;
+      if (eventErr) throw eventErr; else if (!eventDoc) throw new Error('null');
       // eslint-disable-next-line no-underscore-dangle
       else eventId = eventDoc._id;
       DonationModel.findOne({ eventId }, '_id', (donationErr, donationDoc) => {
-        if (donationErr) throw donationErr;
+        if (donationErr) throw donationErr; else if (!donationDoc) throw new Error('null');
         // eslint-disable-next-line no-underscore-dangle
         else donationId = donationDoc._id;
         done();

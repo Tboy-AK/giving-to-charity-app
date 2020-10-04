@@ -278,7 +278,7 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=ngo', () => {
 
   beforeAll(async (done) => {
     await EventModel.findOne({ name: 'Child Dream Tech Power Camp 1.0' }, '_id', (err, doc) => {
-      if (err) throw err;
+      if (err) throw err; else if (!doc) throw new Error('null');
       // eslint-disable-next-line no-underscore-dangle
       else eventId = doc._id;
       done();
