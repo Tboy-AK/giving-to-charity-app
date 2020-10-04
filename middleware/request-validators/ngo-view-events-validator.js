@@ -2,7 +2,7 @@ const { param, header } = require('express-validator');
 const { mongoose: { Types } } = require('../../configs/mongodb-config');
 
 // GET /ngo/:ngoId/donation/:donationId
-// GET /event/:eventId/donation/:donationId
+// GET /ngo/:ngoId/event/:eventId/donation/:donationId
 const validators = [
   header('useraccesspayload')
     .notEmpty()
