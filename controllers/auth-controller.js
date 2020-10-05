@@ -65,7 +65,12 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
             switch (userRole) {
               case 'admin':
                 user = await AdminModel.findOne({ authId })
-                  .then((admin) => admin)
+                  .then((admin) => {
+                    userRoleErr.message = 'Account not verified';
+                    userRoleErr.code = 'AuthError';
+                    if (!admin) throw userRoleErr;
+                    return admin;
+                  })
                   .catch((err) => {
                     throw err;
                   });

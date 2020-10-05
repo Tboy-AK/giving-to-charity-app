@@ -177,6 +177,12 @@ const EventSchema = new Schema({
 
 EventSchema.index({ ngoId: 1, name: 1 }, { unique: true });
 
+EventSchema.virtual('eventDonations', {
+  ref: 'Donation',
+  localField: '_id',
+  foreignField: 'eventId',
+});
+
 const EventModel = model('Event', EventSchema);
 
 module.exports = EventModel;

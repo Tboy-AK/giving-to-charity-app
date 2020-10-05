@@ -165,6 +165,7 @@ const eventController = (errResponse, NGOModel, EventModel) => {
 
     return EventModel
       .findOne({ _id: eventId, ngoId }, '-updatedAt')
+      .populate('eventDonations')
       .then((eventDoc) => {
         if (!eventDoc) {
           const controllerError = new Error('Resource not found');
@@ -175,7 +176,10 @@ const eventController = (errResponse, NGOModel, EventModel) => {
           .status(200)
           .json({
             message: 'Success',
-            data: eventDoc,
+            data: {
+              event: eventDoc,
+              donations: eventDoc.eventDonations,
+            },
           });
       })
       .catch((err) => {
