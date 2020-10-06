@@ -4,9 +4,10 @@ const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
 const logger = require('./utils/winston-logger');
+const setResHeaders = require('./middleware/headers-middleware');
 require('dotenv').config();
 
-// Require routers
+// Routers
 const { ApiHomeRouter } = require('./routers/api-home-router');
 const { AdminRegRouter } = require('./routers/admin-reg-router');
 const { AuthRouter } = require('./routers/auth-router');
@@ -26,13 +27,18 @@ server.set('views', `${__dirname}/views`);
 server.set('view engine', 'jsx');
 server.engine('jsx', createEngine());
 
-server.use([urlencoded({ extended: false }), json()]);
-
+// Server logs
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', 'access.log'), { flags: 'a' });
 server.use([
   morgan('combined'),
   morgan('combined', { stream: accessLogStream }),
 ]);
+
+// Parse Content-Type
+server.use([urlencoded({ extended: false }), json()]);
+
+// Set server response headers
+server.use(setResHeaders);
 
 const version = process.env.VERSION || 'v1.0.0';
 server.use(`/api/${version}`, [
