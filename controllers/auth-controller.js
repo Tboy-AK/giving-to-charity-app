@@ -219,7 +219,24 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
       });
   };
 
-  return { activateUser, userSignin, refreshAccess };
+  const userSignout = (req, res) => {
+    // validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError
+        .array({ onlyFirstError: true }));
+    }
+
+    return (res
+      .status(200)
+      .clearCookie('GiveToCharity-Refresh', { path: '/api/v1.0.0/auth/refresh' })
+      .removeHeader('Authorization'),
+    res.json({ message: 'Successfully logged out' }));
+  };
+
+  return {
+    activateUser, userSignin, refreshAccess, userSignout,
+  };
 };
 
 module.exports = authController;
