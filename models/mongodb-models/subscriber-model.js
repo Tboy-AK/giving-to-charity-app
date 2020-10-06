@@ -94,6 +94,11 @@ const SubscriberSchema = new mongoose.Schema({
       },
     ],
   },
+  deleted: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 }, { timestamps: true });
 const SubscriberModel = mongoose.model('Subscriber', SubscriberSchema);
 
