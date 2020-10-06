@@ -21,7 +21,12 @@ switch (process.env.NODE_ENV) {
 mongoose.Promise = Promise;
 mongoose.connect(
   dbConnectionString,
-  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  },
 );
 const db = mongoose.connection;
 db.on('error', logger.error.bind(console, 'connection error:'));

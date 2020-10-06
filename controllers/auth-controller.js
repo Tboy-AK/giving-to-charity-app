@@ -170,7 +170,7 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
       .header('Authorization', accessToken)
       .cookie('GiveToCharity-Refresh', refreshToken, cookieOptions)
       .json({
-        message: 'Successfully logged in',
+        message: 'Successfully refreshed access',
         data: {
           userId: req.query.userId,
           role,

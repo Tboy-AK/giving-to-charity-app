@@ -141,7 +141,100 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
       .catch((err) => errResponse(res, 500, null, err));
   };
 
-  return { createNGO };
+  const adminVerifyNGO = async (req, res) => {
+    // validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError
+        .array({ onlyFirstError: true }));
+    }
+
+    const { ngoId } = req.params;
+
+    // Get NGO email
+    return NGOModel
+      .findById(ngoId)
+      .populate(
+        'authId',
+        'email',
+        { activated: true, suspended: false },
+      )
+      .then(async (NGODoc) => {
+        const ModelQueryErr = new Error('Resource not found');
+        ModelQueryErr.name = 'NotFoundError';
+
+        // Check that NGO exists
+        if (!NGODoc) {
+          throw ModelQueryErr;
+        }
+
+        const { email } = NGODoc.authId;
+
+        // Check that NGO is activated and not suspended
+        if (!email) {
+          ModelQueryErr.message = 'Account cannot be verified. Either it is not activated or it is suspended.';
+          ModelQueryErr.name = 'NotVerifiableError';
+          throw ModelQueryErr;
+        }
+
+        // Verify NGO
+        await NGOModel.findByIdAndUpdate(ngoId, { verified: true });
+        const domain = `https://${process.env.DOMAIN}`;
+
+        // Send email notification to the new subscriber
+        const htmlFooter = `
+          <p>
+            Thanks,
+            <br/>
+            The 
+            <span style='background-color: gray;'> Give To Charity</span>
+            team.
+          </p>
+        `;
+        const subject = 'Verified NGO';
+        const text = 'Your registration has been received';
+        const htmlBody = `
+          <main class='container'>
+            <p>
+              Dear NGO,
+            </p>
+            <br/>
+            <p>
+              Your account is verified and you can now make use of the 
+              <a href='${domain}/'>
+                Give to Charity
+              </a> 
+              app platform to continue to impact society and the world at large.
+            </p>
+            </p>
+          </main>
+        `;
+        const html = htmlWrapper(htmlBody, 'Verified NGO', htmlFooter);
+        mailer(email, subject, text, html)
+          .catch((err) => logger.error(err.message));
+
+        return res
+          .status(201)
+          .json({
+            message: 'NGO has been verified',
+          });
+      })
+      .catch((err) => {
+        switch (err.name) {
+          case 'NotFoundError':
+            return errResponse(res, 404);
+
+          case 'ValidationError':
+          case 'NotVerifiableError':
+            return errResponse(res, 400, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
+  };
+
+  return { createNGO, adminVerifyNGO };
 };
 
 module.exports = ngoRegController;

@@ -6,7 +6,7 @@ const { userSignin } = require('../controllers/auth-controller')(
   errResponse, AuthModel, { AdminModel, NGOModel },
 );
 
-describe('POST /api/v1.0.0/auth', () => {
+describe('POST /api/v1.0.0/auth/login', () => {
   const res = {
     status: (statusCode) => ({ statusCode, ...res }),
     header: (params) => ({ ...params, ...res }),

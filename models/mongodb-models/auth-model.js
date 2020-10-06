@@ -41,6 +41,14 @@ const AuthSchema = new mongoose.Schema({
     select: false,
   },
 }, { timestamps: true });
+
+AuthSchema.virtual('authAdmin', {
+  ref: 'Admin',
+  localField: '_id',
+  foreignField: 'authId',
+  justOne: true,
+});
+
 const AuthModel = mongoose.model('Auth', AuthSchema);
 
 module.exports = AuthModel;
