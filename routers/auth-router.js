@@ -1,12 +1,16 @@
 const { Router } = require('express');
 const cookieParser = require('cookie-parser');
+const authUser = require('../middleware/auth-user-middleware');
 const authValidator = require('../middleware/request-validators/auth-validator');
+const authSignoutValidator = require('../middleware/request-validators/auth-signout-validator');
 const authActivateValidator = require('../middleware/request-validators/auth-activate-validator');
 const errResponse = require('../utils/error-response-handler');
 const AuthModel = require('../models/mongodb-models/auth-model');
 const AdminModel = require('../models/mongodb-models/admin-model');
 const NGOModel = require('../models/mongodb-models/ngo-model');
-const { activateUser, userSignin, refreshAccess } = require('../controllers/auth-controller')(
+const {
+  activateUser, userSignin, refreshAccess, userSignout,
+} = require('../controllers/auth-controller')(
   errResponse, AuthModel, { AdminModel, NGOModel },
 );
 
@@ -22,8 +26,9 @@ const AuthRouter = Router();
 
 // Sign in user
 AuthRouter
-  .route('/auth/login')
-  .post(authValidator, userSignin);
+  .route('/auth/access')
+  .post(authValidator, userSignin)
+  .delete(authUser, authSignoutValidator, userSignout);
 
 // Refresh user access
 AuthRouter
