@@ -21,12 +21,18 @@ const authActivateAccess = require('../middleware/auth-activate-middleware');
 const AuthRouter = Router();
 
 // Sign in user
-AuthRouter.post('/auth', authValidator, userSignin);
+AuthRouter
+  .route('/auth/login')
+  .post(authValidator, userSignin);
 
 // Refresh user access
-AuthRouter.post('/auth/refresh', authExpAccess, cookieParser(), authRefresh, refreshAccess);
+AuthRouter
+  .route('/auth/refresh')
+  .post(authExpAccess, cookieParser(), authRefresh, refreshAccess);
 
 // Activate user
-AuthRouter.patch('/auth/activate/:authActivateToken', authActivateAccess, authActivateValidator, activateUser);
+AuthRouter
+  .route('/auth/activate/:authActivateToken')
+  .patch(authActivateAccess, authActivateValidator, activateUser);
 
 module.exports = { AuthRouter };
