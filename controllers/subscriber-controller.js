@@ -233,7 +233,79 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
       });
   };
 
-  return { createSubscriber };
+  const unsubscribe = (req, res) => {
+    // validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError
+        .array({ onlyFirstError: true }));
+    }
+
+    // unsubscribe newsletter subscriber
+    return SubscriberModel.findOneAndUpdate(
+      { _id: req.params.subscriberId, deleted: false },
+      { deleted: true },
+    )
+      .then((subscriberDoc) => {
+        // warn against non-existing account
+        if (!subscriberDoc) return errResponse(res, 401);
+
+        // Notify unsubscriber via email
+        const domain = `https://${process.env.DOMAIN}`;
+
+        const htmlFooter = `
+              <p>
+                Cheers,
+                <br/>
+                The 
+                <span style='background-color: gray;'> Give To Charity</span>
+                team.
+              </p>
+            `;
+
+        const { email } = subscriberDoc;
+        const subject = 'Newsletter Unubscription';
+        const text = 'Guess who\'s our latest subscriber!';
+        const htmlBody = `
+          <main class='container'>
+            <section class='Intro container'>
+              <p>
+                Dear Unsubscriber,
+              </p>
+              <br/>
+              <p>
+                Your request to unsubscribe from our platform has been granted.
+                Unfortunately, you will no longer receive updates on how you can help contribute to the passionate, social development activities made known on our
+                <a href='${domain}#subscribe'>
+                  Give To Charity
+                </a> 
+                app platform.
+              </p>
+            </section>
+          </main>
+        `;
+        const html = htmlWrapper(htmlBody, 'Newsletter Unsubscription', htmlFooter);
+        mailer(email, subject, text, html)
+          .catch((err) => logger.error(err.message));
+
+        return res
+          .status(200)
+          .json({
+            message: 'You have successfully unsubscribed from the Give To Charity newsletters',
+          });
+      })
+      .catch((err) => {
+        switch (err.code) {
+          case 'AuthError':
+            return errResponse(res, 403, err.message);
+
+          default:
+            return errResponse(res, 500, null, err);
+        }
+      });
+  };
+
+  return { createSubscriber, unsubscribe };
 };
 
 module.exports = subcriberRegController;

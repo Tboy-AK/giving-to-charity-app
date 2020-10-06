@@ -4,7 +4,7 @@ const AuthModel = require('../models/mongodb-models/auth-model');
 const NGOModel = require('../models/mongodb-models/ngo-model');
 const { adminVerifyNGO } = require('../controllers/ngo-reg-controller')(errResponse, AuthModel, NGOModel);
 
-describe('GET /api/v1.0.0/ngo/:ngoId/verify', () => {
+describe('PATCH /api/v1.0.0/ngo/:ngoId/verify', () => {
   const res = {
     status: (statusCode) => ({ statusCode, ...res }),
     json: (message) => ({ message, ...res }),

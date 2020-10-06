@@ -199,6 +199,7 @@ const authController = (errResponse, AuthModel, { AdminModel, NGOModel }) => {
       },
     )
       .then((authDoc) => {
+        // warn against non-existing account
         if (!authDoc) return errResponse(res, 401);
 
         return res
