@@ -172,7 +172,10 @@ const EventSchema = new Schema({
       'Physical venue and online platforms cannot all be empty',
     ],
   },
-  needs: [NeedItemSchema],
+  needs: {
+    type: [NeedItemSchema],
+    required: true,
+  },
 }, { timestamps: true });
 
 EventSchema.index({ ngoId: 1, name: 1 }, { unique: true });
