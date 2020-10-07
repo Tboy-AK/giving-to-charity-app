@@ -115,7 +115,10 @@ const NGOSchema = new Schema({
     minlength: 2,
     maxlength: 500,
   },
-  needs: [NeedItemSchema],
+  needs: {
+    type: [NeedItemSchema],
+    required: true,
+  },
   verified: {
     type: Boolean,
     default: false,

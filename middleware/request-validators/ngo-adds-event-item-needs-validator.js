@@ -15,6 +15,11 @@ const validators = [
     .withMessage('Cannot implement route')
     .isMongoId()
     .withMessage('Invalid access'),
+  param('eventId')
+    .notEmpty()
+    .withMessage('Cannot implement route')
+    .isMongoId()
+    .withMessage('Invalid access'),
   body('*.name')
     .isString()
     .isLength({ min: 2, max: 100 })

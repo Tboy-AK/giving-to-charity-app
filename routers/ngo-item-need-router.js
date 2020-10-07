@@ -10,7 +10,7 @@ const NGOItemNeedsRouter = Router();
 
 NGOItemNeedsRouter
   .route('/ngo/:ngoId/need')
-  .post(authNGO, ngoAddNeedsValidator, addNeeds) // NGO can register
-  .delete(authNGO, ngoRemoveNeedValidator, removeNeed); // Admin can verify NGO
+  .post(authNGO, ngoAddNeedsValidator, addNeeds) // NGO can add to its list of needs
+  .delete(authNGO, ngoRemoveNeedValidator, removeNeed); // NGO can remove from its list of needs
 
 module.exports = { NGOItemNeedsRouter };

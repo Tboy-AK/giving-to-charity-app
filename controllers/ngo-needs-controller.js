@@ -79,7 +79,7 @@ const ngoNeeds = (errResponse, NGOModel) => {
         if (!ngoNeedDoc) throw controllerError;
 
         return res
-          .status(201)
+          .status(200)
           .json({
             message: 'Itemised need has been removed successfully',
             count: ngoNeedDoc.needs.length,
@@ -99,6 +99,7 @@ const ngoNeeds = (errResponse, NGOModel) => {
 
         switch (ngoErr.name) {
           case 'ValidationError':
+          case 'NotFoundError':
             return errResponse(res, 400, ngoErr.message);
 
           default:
