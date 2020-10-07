@@ -95,7 +95,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=donor', () => {
     it('responds status 400', () => {
       expect(resStatusSpy).toHaveBeenCalledWith(400);
     });
-    it('responds with a JSON data', () => {
+    it('responds with an error message', () => {
       expect(resSendSpy).toHaveBeenCalled();
     });
   });

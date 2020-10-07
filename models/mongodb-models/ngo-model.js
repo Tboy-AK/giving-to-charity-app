@@ -68,6 +68,16 @@ const NGOSchema = new Schema({
     type: [{}],
     ref: 'SDG',
     required: true,
+    validate: [
+      {
+        validator: validators.arrayLengthRange(1, 5),
+        msg: 'NGOs must have between 1 and 5 SDGs',
+      },
+      {
+        validator: validators.arrayDataType(Number),
+        msg: 'SDGs should be signified by their goal number',
+      },
+    ],
   },
   socialMedia: {
     type: [SocialMediaSchema],
@@ -112,16 +122,6 @@ const NGOSchema = new Schema({
     required: true,
   },
 }, { timestamps: true });
-
-NGOSchema.path('sdgs')
-  .validate(
-    validators.arrayLengthRange(1, 5),
-    'NGOs must have between 1 and 5 SDGs',
-  )
-  .validate(
-    validators.arrayDataType(Number),
-    'SDGs should be signified by their goal number',
-  );
 
 const NGOModel = model('NGO', NGOSchema);
 

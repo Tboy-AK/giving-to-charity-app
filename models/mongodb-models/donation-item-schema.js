@@ -10,6 +10,7 @@ const DonationItemSchema = new Schema({
     minlength: 2,
     maxlength: 30,
     trim: ' ',
+    lowercase: true,
   },
   desc: {
     type: String,
