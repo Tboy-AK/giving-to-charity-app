@@ -5,7 +5,7 @@ cache: npm
 services:
   - mongodb
 before_script:
-  - sleep 15
+  - sleep 20
   - mongo test_give_to_charity_app --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
 env:
   global:
