@@ -6,6 +6,7 @@ const NeedItemSchema = new Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
     minlength: 2,
     maxlength: 30,
     trim: ' ',
