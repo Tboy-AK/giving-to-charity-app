@@ -234,7 +234,108 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
       });
   };
 
-  return { createNGO, adminVerifyNGO };
+  const listNGOs = (req, res) => {
+    // validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError
+        .array({ onlyFirstError: true }));
+    }
+
+    const { page, limit } = req.query;
+
+    // hash user password
+    return NGOModel
+      .find(
+        { verified: true },
+        '-verified -needs -socialMedia -vision -authId',
+        { skip: page * limit, limit },
+      )
+      .then((ngoDocs) => {
+        // check that NGOs are verified
+        const controllerError = new Error('Resource not found');
+        controllerError.name = 'NotFoundError';
+        if (!ngoDocs) throw controllerError;
+
+        return res
+          .status(200)
+          .json({
+            message: 'NGOs successfully found',
+            count: ngoDocs.length,
+            data: ngoDocs,
+          });
+      })
+      .catch((ngoErr) => {
+        if (ngoErr.code) {
+          switch (ngoErr.code) {
+            default:
+              return errResponse(res, 500, null, ngoErr);
+          }
+        }
+
+        switch (ngoErr.name) {
+          case 'ValidatorError':
+          case 'NotFoundError':
+            return errResponse(res, 400, ngoErr.message);
+
+          default:
+            return errResponse(res, 500, null, ngoErr);
+        }
+      });
+  };
+
+  const viewNGO = async (req, res) => {
+    // validate user request data
+    const validationError = validationResult(req);
+    if (!validationError.isEmpty()) {
+      return errResponse(res, 422, validationError
+        .array({ onlyFirstError: true }));
+    }
+
+    // hash user password
+    return NGOModel
+      .findOne({ verified: true, _id: req.params.ngoId })
+      .populate('authId', '-_id null', { suspended: false, activated: true })
+      .then((ngoDoc) => {
+        // check that NGO is fully verified
+        const controllerError = new Error('Resource not found');
+        controllerError.name = 'NotFoundError';
+        if (!ngoDoc || !ngoDoc.authId) throw controllerError;
+        const ngo = ngoDoc;
+
+        // filter response body data
+        ngo.authId = undefined;
+        ngo.verified = undefined;
+
+        return res
+          .status(201)
+          .json({
+            message: 'NGO successfully found',
+            data: ngo,
+          });
+      })
+      .catch((authErr) => {
+        if (authErr.code) {
+          switch (authErr.code) {
+            default:
+              return errResponse(res, 500, null, authErr);
+          }
+        }
+
+        switch (authErr.name) {
+          case 'ValidatorError':
+          case 'NotFoundError':
+            return errResponse(res, 400, authErr.message);
+
+          default:
+            return errResponse(res, 500, null, authErr);
+        }
+      });
+  };
+
+  return {
+    createNGO, adminVerifyNGO, listNGOs, viewNGO,
+  };
 };
 
 module.exports = ngoRegController;
