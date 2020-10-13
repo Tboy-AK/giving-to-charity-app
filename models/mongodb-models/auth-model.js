@@ -49,6 +49,13 @@ AuthSchema.virtual('authAdmin', {
   justOne: true,
 });
 
+AuthSchema.virtual('authNGO', {
+  ref: 'NGO',
+  localField: '_id',
+  foreignField: 'authId',
+  justOne: true,
+});
+
 const AuthModel = mongoose.model('Auth', AuthSchema);
 
 module.exports = AuthModel;
