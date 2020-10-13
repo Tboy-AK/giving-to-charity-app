@@ -34,7 +34,7 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
         const finishedResponse = () => {
           if (processCount === totalProcessCount) {
             // Send email notification to the new subscriber
-            const domain = `https://${process.env.DOMAIN}`;
+            const { origin } = req.headers;
 
             const eventHTMLArticles = ngoEvents.length === 0 ? '' : ngoEvents.map((ngoEvent) => ngoEvent
               .map(({
@@ -48,8 +48,8 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
                       <time datetime='${date}' class='badge badge-secondary' style='margin-right: 3em;'>${date}</time>
                       <time datetime='${time.replace('Z', '')}' class='badge badge-secondary'>${time}</time>
                     </h6>
-                    <p><a href='${domain}/ngos/${ngoId._id}/events/${_id}' class='card-link'>
-                      ${domain}/ngos/${ngoId._id}/events/${_id}
+                    <p><a href='${origin}/ngos/${ngoId._id}/events/${_id}' class='card-link'>
+                      ${origin}/ngos/${ngoId._id}/events/${_id}
                     </a></p>
                     <p class='card-text'>${desc}</p>
                   </div>
@@ -59,8 +59,8 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
               <p>
                 Cheers,
                 <br/>
-                The 
-                <span style='background-color: gray;'> Give To Charity</span>
+                The
+                <a href='${origin}' style='background-color: gray;'>Give To Charity</a> 
                 team.
               </p>
             `;
@@ -77,7 +77,7 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
                   <br/>
                   <p>
                     Congratulations! You can now receive unhindered updates on activities regarding your choice interests as indicated on our website at 
-                    <a href='${domain}#subscribe'>
+                    <a href='${origin}#subscribe'>
                       Give To Charity
                     </a>.
                   </p>
@@ -251,14 +251,14 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
         if (!subscriberDoc) return errResponse(res, 401);
 
         // Notify unsubscriber via email
-        const domain = `https://${process.env.DOMAIN}`;
+        const { origin } = req.headers;
 
         const htmlFooter = `
               <p>
                 Cheers,
                 <br/>
-                The 
-                <span style='background-color: gray;'> Give To Charity</span>
+                The
+                <a href='${origin}' style='background-color: gray;'>Give To Charity</a> 
                 team.
               </p>
             `;
@@ -275,8 +275,9 @@ const subcriberRegController = (errResponse, SubscriberModel, EventModel, NGOMod
               <br/>
               <p>
                 Your request to unsubscribe from our platform has been granted.
-                Unfortunately, you will no longer receive updates on how you can help contribute to the passionate, social development activities made known on our
-                <a href='${domain}#subscribe'>
+                Unfortunately, you will no longer receive updates on how you can help contribute to the passionate, 
+                social development activities made known on our 
+                <a href='${origin}#subscribe'>
                   Give To Charity
                 </a> 
                 app platform.

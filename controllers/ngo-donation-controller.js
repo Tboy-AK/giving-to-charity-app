@@ -30,7 +30,7 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
         reqErr.code = 404;
         if (!ngoDoc) throw reqErr;
 
-        const domain = `https://${process.env.DOMAIN}`;
+        const { origin } = req.headers;
 
         const itemParagraphListing = donationDoc.items.map(({
           name, quantity, unit, desc, purpose,
@@ -46,8 +46,8 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
           <p>
             Thanks,
             <br/>
-            The 
-            <span style='font-weight: 700;'> Give To Charity</span>
+            The
+            <a href='${origin}' style='background-color: gray;'>Give To Charity</a> 
             team.
           </p>
         `;
@@ -105,8 +105,8 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
                 <p>
                   A new donation has been made to your account at ${time} on ${date}.
                   View more details at 
-                  <a href='${domain}/ngos/${donationDoc.ngoId}/donations/${donationDoc._id}'>
-                    ${domain}/ngos/${donationDoc.ngoId}/donations/${donationDoc._id}
+                  <a href='${origin}/ngos/${donationDoc.ngoId}/donations/${donationDoc._id}'>
+                    ${origin}/ngos/${donationDoc.ngoId}/donations/${donationDoc._id}
                   </a>.
                 </p>
               </section>
@@ -318,7 +318,7 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
           .findById(donationDoc.ngoId._id)
           .populate('authId', 'email')
           .then((ngoDoc) => {
-            const domain = `https://${process.env.DOMAIN}`;
+            const { origin } = req.headers;
 
             const itemParagraphListing = donationDoc.items.map(({
               name, quantity, unit, desc, purpose,
@@ -334,8 +334,8 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
               <p>
                 Thanks,
                 <br/>
-                The 
-                <span style='font-weight: 700;'> Give To Charity</span>
+                The
+                <a href='${origin}' style='background-color: gray;'>Give To Charity</a> 
                 team.
               </p>
             `;
@@ -393,8 +393,8 @@ const donationController = (errResponse, DonationModel, NGOModel) => {
                     <p>
                       A new donation has been made to your account at ${time} on ${date}.
                       View more details at 
-                      <a href='${domain}/ngos/${ngoDoc}/donations/${donationDoc._id}'>
-                        ${domain}/ngos/${ngoDoc}/donations/${donationDoc._id}
+                      <a href='${origin}/ngos/${ngoDoc}/donations/${donationDoc._id}'>
+                        ${origin}/ngos/${ngoDoc}/donations/${donationDoc._id}
                       </a>.
                     </p>
                   </section>

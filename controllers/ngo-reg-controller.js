@@ -55,14 +55,14 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
                 );
 
                 // Send email notification to the new subscriber
-                const domain = `https://${process.env.DOMAIN}`;
+                const { origin } = req.headers;
 
                 const htmlFooter = `
                   <p>
                     Thanks,
                     <br/>
-                    The 
-                    <span style='background-color: gray;'> Give To Charity</span>
+                    The
+                    <a href='${origin}' style='background-color: gray;'>Give To Charity</a> 
                     team.
                   </p>
                 `;
@@ -82,8 +82,8 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
                     </p>
                     <p>
                       But before then, activate your account at 
-                      <a href='${domain}/auth/activate/${authActivateToken}'>
-                        ${domain}/auth/activate/${authActivateToken}
+                      <a href='${origin}/auth/activate/${authActivateToken}'>
+                        ${origin}/auth/activate/${authActivateToken}
                       </a>.
                     </p>
                   </main>
@@ -179,7 +179,7 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
 
         // Verify NGO
         await NGOModel.findByIdAndUpdate(ngoId, { verified: true });
-        const domain = `https://${process.env.DOMAIN}`;
+        const { origin } = req.headers;
 
         // Send email notification to the new subscriber
         const htmlFooter = `
@@ -187,7 +187,7 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
             Thanks,
             <br/>
             The 
-            <span style='background-color: gray;'> Give To Charity</span>
+            <a href='${origin}' style='background-color: gray;'>Give To Charity</a> 
             team.
           </p>
         `;
@@ -201,7 +201,7 @@ const ngoRegController = (errResponse, AuthModel, NGOModel) => {
             <br/>
             <p>
               Your account is verified and you can now make use of the 
-              <a href='${domain}/'>
+              <a href='${origin}/'>
                 Give to Charity
               </a> 
               app platform to continue to impact society and the world at large.
