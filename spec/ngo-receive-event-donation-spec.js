@@ -6,7 +6,7 @@ const DonationModel = require('../models/mongodb-models/donation-model');
 const AuthModel = require('../models/mongodb-models/auth-model');
 const { receiveDonation } = require('../controllers/event-donation-controller')(errResponse, DonationModel, EventModel, AuthModel);
 
-fdescribe('POST /api/v1.0.0/ngo/:ngoId/event/:eventId/donation/:donationId/received', () => {
+describe('POST /api/v1.0.0/event/:eventId/donation/:donationId/received', () => {
   const res = {
     status: (statusCode) => ({ statusCode, ...res }),
     json: (message) => ({ message, ...res }),
@@ -54,6 +54,12 @@ fdescribe('POST /api/v1.0.0/ngo/:ngoId/event/:eventId/donation/:donationId/recei
       resStatusSpy = spyOn(res, 'status').and.callThrough();
       resJSONSpy = spyOn(res, 'json');
       await receiveDonation(req, res);
+      done();
+    });
+
+    afterAll(async (done) => {
+      await DonationModel
+        .findOneAndUpdate({ received: true }, { received: false });
       done();
     });
 
