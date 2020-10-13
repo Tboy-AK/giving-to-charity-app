@@ -27,6 +27,9 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=donor', () => {
       query: {
         logistics: 'donor',
       },
+      headers: {
+        origin: 'http://localhost:3000',
+      },
       params: {
         eventId,
       },
@@ -68,6 +71,9 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=donor', () => {
       query: {
         logistics: 'donor',
       },
+      headers: {
+        origin: 'http://localhost:3000',
+      },
       params: {
         eventId,
       },
@@ -105,6 +111,9 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=donor', () => {
     const req = {
       query: {
         logistics: 'donor',
+      },
+      headers: {
+        origin: 'http://localhost:3000',
       },
       params: {
         eventId,
@@ -146,6 +155,9 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=donor', () => {
     const req = {
       query: {
         logistics: 'donor',
+      },
+      headers: {
+        origin: 'http://localhost:3000',
       },
       params: {
         eventId,
@@ -189,6 +201,9 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=donor', () => {
   describe('when requested without specifying who handles logistics as a request query', () => {
     const req = {
       query: {},
+      headers: {
+        origin: 'http://localhost:3000',
+      },
       params: {
         eventId,
       },
@@ -229,6 +244,9 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=donor', () => {
     const req = {
       query: {
         logistics: 'donor',
+      },
+      headers: {
+        origin: 'http://localhost:3000',
       },
       params: {
         eventId,
@@ -290,6 +308,9 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=ngo', () => {
       query: {
         logistics: 'ngo',
       },
+      headers: {
+        origin: 'http://localhost:3000',
+      },
       params: {
         eventId,
       },
@@ -339,6 +360,9 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=ngo', () => {
       query: {
         logistics: 'somebody',
       },
+      headers: {
+        origin: 'http://localhost:3000',
+      },
       params: {
         eventId,
       },
@@ -379,6 +403,9 @@ describe('POST /api/v1.0.0/event/:eventId/donation/?logistics=ngo', () => {
     const req = {
       query: {
         logistics: 'ngo',
+      },
+      headers: {
+        origin: 'http://localhost:3000',
       },
       params: {
         eventId: '5f72fd13dbff6136603e541b',

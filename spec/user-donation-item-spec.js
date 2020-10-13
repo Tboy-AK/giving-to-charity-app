@@ -11,7 +11,7 @@ describe('POST /api/v1.0.0/donation_item', () => {
     send: (message) => ({ message, ...res }),
   };
 
-  describe('when requested for a list of items', () => {
+  xdescribe('when requested for a list of items', () => {
     const req = {
       body: [
         {
