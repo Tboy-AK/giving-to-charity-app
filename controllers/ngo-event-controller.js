@@ -33,7 +33,7 @@ const eventController = (errResponse, NGOModel, EventModel) => {
               resNGOEvent.socialMedia[i] = { name, url };
             });
 
-            const domain = `https://${process.env.DOMAIN}`;
+            const { origin } = req.headers;
 
             // Notify NGO via email
             {
@@ -41,8 +41,8 @@ const eventController = (errResponse, NGOModel, EventModel) => {
                 <p>
                   Thanks,
                   <br/>
-                  The 
-                  <span style='background-color: gray;'> Give To Charity</span>
+                  The
+                  <a href='${origin}' style='background-color: gray;'>Give To Charity</a> 
                   team.
                 </p>
               `;
@@ -60,11 +60,11 @@ const eventController = (errResponse, NGOModel, EventModel) => {
                       A new event titled
                       <span style='font-weight: 700;'> "${reqBody.name}" </span>
                       has been created on your account. Confirm this 
-                      <a href='${domain}/ngo/${req.params.ngoId}/event/${resNGOEvent._id}'>
+                      <a href='${origin}/ngo/${req.params.ngoId}/event/${resNGOEvent._id}'>
                         here
                       </a>.
                       If this wasn't you, please retract and report to the 
-                      <a href='${domain}/support'>
+                      <a href='${origin}/support'>
                         support
                       </a>
                       team, else, you're good to go.

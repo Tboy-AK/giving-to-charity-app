@@ -24,6 +24,9 @@ describe('POST /api/v1.0.0/subscriber', () => {
 
   describe('when requested with all appropriate details', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'subtester@testmail.com',
         sdgs: [1, 4],
@@ -55,6 +58,9 @@ describe('POST /api/v1.0.0/subscriber', () => {
 
   describe('when requested without NGOs', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'subtester@testmail.com',
         sdgs: [1, 4],
@@ -84,6 +90,9 @@ describe('POST /api/v1.0.0/subscriber', () => {
 
   describe('when requested without SDGs', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'subtester@testmail.com',
         ngos: [ngoId],
@@ -114,6 +123,9 @@ describe('POST /api/v1.0.0/subscriber', () => {
 
   describe('when requested without NGOs and SDGs', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'subtester@testmail.com',
         sdgs: [],

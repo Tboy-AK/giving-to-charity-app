@@ -12,6 +12,9 @@ describe('POST /api/v1.0.0/ngo', () => {
 
   describe('when requested with all appropriate details', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'ngt@testmail.com',
         phone: '+2348074289936',
@@ -57,6 +60,9 @@ describe('POST /api/v1.0.0/ngo', () => {
 
   describe('when requested without needs', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'ngt@testmail.com',
         phone: '+2348074289936',
@@ -101,6 +107,9 @@ describe('POST /api/v1.0.0/ngo', () => {
 
   describe('when requested with unrecognised social media account', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'ngt@testmail.com',
         phone: '+2348074289936',
@@ -146,6 +155,9 @@ describe('POST /api/v1.0.0/ngo', () => {
 
   describe('when requested with wrong data type in SDGs field', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'ngt@testmail.com',
         phone: '+2348074289936',
@@ -191,6 +203,9 @@ describe('POST /api/v1.0.0/ngo', () => {
 
   describe('when requested with wrong data type in zip code field', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'ngt@testmail.com',
         phone: '+2348074289936',
@@ -236,6 +251,9 @@ describe('POST /api/v1.0.0/ngo', () => {
 
   describe('when requested with empty needs', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'ngt@testmail.com',
         phone: '+2348074289936',

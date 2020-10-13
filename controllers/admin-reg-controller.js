@@ -55,14 +55,14 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
                 );
 
                 // Send email notification to the new subscriber
-                const domain = `https://${process.env.DOMAIN}`;
+                const { origin } = req.headers;
 
                 const htmlFooter = `
                   <p>
                     Thanks,
                     <br/>
                     The 
-                    <span style='background-color: gray;'> Give To Charity</span>
+                    <a href='${origin}' style='background-color: gray;'>Give To Charity</a> 
                     team.
                   </p>
                 `;
@@ -82,8 +82,8 @@ const adminRegController = (errResponse, AuthModel, AdminModel) => {
                     </p>
                     <p>
                       But before then, activate your account at
-                      <a href='${domain}/auth/activate/${authActivateToken}'>
-                        ${domain}/auth/activate/${authActivateToken}
+                      <a href='${origin}/auth/activate/${authActivateToken}'>
+                        ${origin}/auth/activate/${authActivateToken}
                       </a>. The link expires in 7 days.
                     </p>
                     <h2>Login Details</h2>

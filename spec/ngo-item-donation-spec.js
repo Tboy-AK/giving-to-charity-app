@@ -23,6 +23,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=donor', () => {
 
   describe('when requested for logistics by donor', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {
         logistics: 'donor',
       },
@@ -64,6 +67,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=donor', () => {
 
   describe('when requested with no item to be donated', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {
         logistics: 'donor',
       },
@@ -102,6 +108,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=donor', () => {
 
   describe('when requested with a past date', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {
         logistics: 'donor',
       },
@@ -143,6 +152,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=donor', () => {
 
   describe('when requested with pickup point', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {
         logistics: 'donor',
       },
@@ -192,6 +204,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=donor', () => {
 
   describe('when forced to relate donation to both NGO and event', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {
         logistics: 'donor',
       },
@@ -235,6 +250,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=donor', () => {
 
   describe('when requested without specifying who handles logistics as a request query', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {},
       params: {
         ngoId,
@@ -274,6 +292,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=donor', () => {
 
   describe('when requested without a contact detail', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {
         logistics: 'donor',
       },
@@ -334,6 +355,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=ngo', () => {
 
   describe('when requested for logistics by NGO with all required details', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {
         logistics: 'ngo',
       },
@@ -383,6 +407,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=ngo', () => {
 
   describe('when requested with a wrong logistics handler', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {
         logistics: 'somebody',
       },
@@ -424,6 +451,9 @@ describe('POST /api/v1.0.0/ngo/:ngoId/donation/?logistics=ngo', () => {
 
   describe('when requested with a non-existent NGO', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       query: {
         logistics: 'ngo',
       },

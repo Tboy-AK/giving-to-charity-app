@@ -13,7 +13,12 @@ describe('DELETE /api/v1.0.0/subscriber', () => {
   };
 
   describe('when requested for a subscriber', () => {
-    const req = { params: { subscriberId: '' } };
+    const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
+      params: { subscriberId: '' },
+    };
     let resStatusSpy;
     let resJSONSpy;
 
@@ -42,7 +47,12 @@ describe('DELETE /api/v1.0.0/subscriber', () => {
   });
 
   describe('when requested for one who has unsubscribed', () => {
-    const req = { params: { subscriberId: '' } };
+    const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
+      params: { subscriberId: '' },
+    };
     let resStatusSpy;
     let resSendSpy;
 
@@ -72,6 +82,9 @@ describe('DELETE /api/v1.0.0/subscriber', () => {
 
   describe('when requested for one who hasn\'t subscribed at all', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       params: { subscriberId: '' },
     };
     let resStatusSpy;

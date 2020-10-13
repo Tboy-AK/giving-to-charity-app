@@ -27,7 +27,12 @@ describe('PATCH /api/v1.0.0/ngo/:ngoId/verify', () => {
   });
 
   describe('when requested with NGO ID URL parameter', () => {
-    const req = { params: { ngoId } };
+    const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
+      params: { ngoId },
+    };
     let resStatusSpy;
     let resJSONSpy;
 
@@ -48,7 +53,12 @@ describe('PATCH /api/v1.0.0/ngo/:ngoId/verify', () => {
   });
 
   describe('when requested with NGO ID URL parameter', () => {
-    const req = { params: { verifiedNGOId } };
+    const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
+      params: { verifiedNGOId },
+    };
     let resStatusSpy;
     let resSendSpy;
 

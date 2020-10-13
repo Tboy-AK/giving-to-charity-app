@@ -12,6 +12,9 @@ describe('POST /api/v1.0.0/admin', () => {
 
   describe('when requested for a new admin', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'tester@testmail.com',
         phone: '+2348028108283',
@@ -47,6 +50,9 @@ describe('POST /api/v1.0.0/admin', () => {
 
   describe('when requested with an existing email', () => {
     const req = {
+      headers: {
+        origin: 'http://sua-charity-test',
+      },
       body: {
         email: 'joefrank@gmail.com',
         phone: '+2348012345678',
