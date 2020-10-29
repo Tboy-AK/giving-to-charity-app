@@ -91,6 +91,144 @@ describe('POST /api/v1.0.0/ngo/:ngoId/event', () => {
     });
   });
 
+  describe('when requested with past date', () => {
+    const req = {
+      headers: {
+        useraccesspayload: {
+          email: 'childdreamsfoundation@gmail.com',
+        },
+      },
+      params: { ngoId },
+      body: {
+        name: 'NGT Season 4: Engagement Phase',
+        dateTime: new Date(Date.now() - (3600000 * 24 * 30)),
+        desc: "The participants create videos about a book they've read for the week. Participants are graded by their age range. The winners of each age range win a 10,000 Naira voucher from Laterna",
+        mission: 'To encourage the reading culture in the African child',
+        vision: 'We see an Africa where chidren grow up to be higly incomparable to their peers',
+        website: 'http://ngt-web-develop.herokuapp.com/',
+        sdg: 1,
+        socialMedia: [
+          {
+            name: 'Twitter',
+            url: 'https://twitter.com/SNurturing',
+          },
+        ],
+        onlinePlatforms: [
+          {
+            name: 'Twitter',
+            url: 'https://twitter.com/SNurturing',
+          },
+        ],
+        venue: {
+          country: 'Nigeria',
+          state: 'Lagos',
+          city: 'Agege',
+          address: 'Ijaiye MHE, off Agege Stadium, Agege-Ogba, Lagos, Nigeria.',
+          zipCode: 100283,
+        },
+        needs: [
+          {
+            name: 'Inspirational novels',
+          },
+        ],
+      },
+    };
+    let resStatusSpy;
+    let resSendSpy;
+
+    beforeAll(async (done) => {
+      req.params.ngoId = await ngoId;
+      resStatusSpy = spyOn(res, 'status').and.callThrough();
+      resSendSpy = spyOn(res, 'send');
+      createEvent(req, res)
+        .then(() => done())
+        .catch((err) => {
+          logger.error(err.message);
+          return done();
+        });
+    });
+
+    afterAll(async (done) => {
+      EventModel.deleteOne({ name: req.body.name }, () => done());
+    });
+
+    it('responds status 400', () => {
+      expect(resStatusSpy).toHaveBeenCalledWith(400);
+    });
+    it('responds with a JSON data', () => {
+      expect(resSendSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('when requested with current date', () => {
+    const req = {
+      headers: {
+        useraccesspayload: {
+          email: 'childdreamsfoundation@gmail.com',
+        },
+      },
+      params: { ngoId },
+      body: {
+        name: 'NGT Season 4: Engagement Phase',
+        dateTime: new Date(),
+        desc: "The participants create videos about a book they've read for the week. Participants are graded by their age range. The winners of each age range win a 10,000 Naira voucher from Laterna",
+        mission: 'To encourage the reading culture in the African child',
+        vision: 'We see an Africa where chidren grow up to be higly incomparable to their peers',
+        website: 'http://ngt-web-develop.herokuapp.com/',
+        sdg: 1,
+        socialMedia: [
+          {
+            name: 'Twitter',
+            url: 'https://twitter.com/SNurturing',
+          },
+        ],
+        onlinePlatforms: [
+          {
+            name: 'Twitter',
+            url: 'https://twitter.com/SNurturing',
+          },
+        ],
+        venue: {
+          country: 'Nigeria',
+          state: 'Lagos',
+          city: 'Agege',
+          address: 'Ijaiye MHE, off Agege Stadium, Agege-Ogba, Lagos, Nigeria.',
+          zipCode: 100283,
+        },
+        needs: [
+          {
+            name: 'Inspirational novels',
+          },
+        ],
+      },
+    };
+    let resStatusSpy;
+    let resSendSpy;
+
+    beforeAll(async (done) => {
+      req.params.ngoId = await ngoId;
+      resStatusSpy = spyOn(res, 'status').and.callThrough();
+      resSendSpy = spyOn(res, 'send');
+      createEvent(req, res)
+        .then(() => done())
+        .catch((err) => {
+          logger.error(err.message);
+          return done();
+        });
+    });
+
+    afterAll(async (done) => {
+      EventModel.deleteOne({ name: req.body.name }, () => done());
+    });
+
+    it('responds status 400', () => {
+      expect(resStatusSpy).toHaveBeenCalledWith(400);
+    });
+    it('responds with an error message', () => {
+      expect(resSendSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('when requested without both online platform and physical venue', () => {
     const req = {
       headers: {
