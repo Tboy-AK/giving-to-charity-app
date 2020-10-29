@@ -32,7 +32,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/event', () => {
       params: { ngoId },
       body: {
         name: 'NGT Season 4: Engagement Phase',
-        dateTime: '2020-11-21T12:30:00',
+        dateTime: new Date(Date.now() + (3600000 * 24 * 30)),
         desc: "The participants create videos about a book they've read for the week. Participants are graded by their age range. The winners of each age range win a 10,000 Naira voucher from Laterna",
         mission: 'To encourage the reading culture in the African child',
         vision: 'We see an Africa where chidren grow up to be higly incomparable to their peers',
@@ -101,7 +101,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/event', () => {
       params: { ngoId },
       body: {
         name: 'NGT Season 4: Engagement Phase',
-        dateTime: '2020-11-21T12:30:00',
+        dateTime: new Date(Date.now() + (3600000 * 24 * 30)),
         desc: "The participants create videos about a book they've read for the week. Participants are graded by their age range. The winners of each age range win a 10,000 Naira voucher from Laterna",
         mission: 'To encourage the reading culture in the African child',
         vision: 'We see an Africa where chidren grow up to be higly incomparable to their peers',
@@ -157,7 +157,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/event', () => {
       params: { ngoId },
       body: {
         name: 'NGT Season 4: Engagement Phase',
-        dateTime: '2020-11-21T12:30:00',
+        dateTime: new Date(Date.now() + (3600000 * 24 * 30)),
         desc: "The participants create videos about a book they've read for the week. Participants are graded by their age range. The winners of each age range win a 10,000 Naira voucher from Laterna",
         mission: 'To encourage the reading culture in the African child',
         vision: 'We see an Africa where chidren grow up to be higly incomparable to their peers',
@@ -226,7 +226,7 @@ describe('POST /api/v1.0.0/ngo/:ngoId/event', () => {
       params: { ngoId },
       body: {
         name: 'NGT Season 4: Engagement Phase',
-        dateTime: '2020-11-21T12:30:00',
+        dateTime: new Date(Date.now() + (3600000 * 24 * 30)),
         desc: "The participants create videos about a book they've read for the week. Participants are graded by their age range. The winners of each age range win a 10,000 Naira voucher from Laterna",
         mission: 'To encourage the reading culture in the African child',
         vision: 'We see an Africa where chidren grow up to be higly incomparable to their peers',
