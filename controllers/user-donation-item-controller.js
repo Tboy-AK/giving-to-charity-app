@@ -23,14 +23,25 @@ const userDonationController = (errResponse, ProhibitedDonationItemModel, EventM
 
     // Check for prohibited items in user's request
     const prohibitedItems = await ProhibitedDonationItemModel
-      .find({ name: { $in: itemNames } })
+      .find({ name: { $in: itemNames } }, '-_id name')
       .catch((err) => { errObject = err; });
 
     if (errObject) return errResponse(res, 500, null, errObject);
 
     if (
       prohibitedItems && prohibitedItems.length > 0
-    ) return errResponse(res, 400, `Prohibited items: ${prohibitedItems.join(', ')}`);
+    ) {
+      const { origin } = req.headers;
+      return errResponse(
+        res, 400,
+        `Prohibited items: ${
+          prohibitedItems
+            .map((prohibitedItemDoc) => prohibitedItemDoc.name)
+            .join(', ')
+        }.
+        View more at ${origin}/prohibited_items`,
+      );
+    }
 
     // Set async response handling
     const controllerProcessEmitter = new events.EventEmitter();
@@ -41,7 +52,7 @@ const userDonationController = (errResponse, ProhibitedDonationItemModel, EventM
         return res
           .status(200)
           .json({
-            message: '',
+            message: 'Success',
             data: donationSuggestions,
             count: totalSuggestionsCount,
           });
