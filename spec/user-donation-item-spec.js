@@ -1,3 +1,4 @@
+require('dotenv').config();
 const errResponse = require('../utils/error-response-handler');
 const ProhibitedDonationItemModel = require('../models/mongodb-models/prohibited-donation-item-model');
 const EventModel = require('../models/mongodb-models/event-model');
@@ -11,8 +12,11 @@ describe('POST /api/v1.0.0/donation_item', () => {
     send: (message) => ({ message, ...res }),
   };
 
+  const { DOMAIN } = process.env;
+
   xdescribe('when requested for a list of items', () => {
     const req = {
+      headers: { origin: `http://${DOMAIN}` },
       body: [
         {
           name: 'Shoes',
@@ -57,6 +61,7 @@ describe('POST /api/v1.0.0/donation_item', () => {
 
   describe('when requested with a prohibited item', () => {
     const req = {
+      headers: { origin: `http://${DOMAIN}` },
       body: [
         {
           name: 'Shoes',
@@ -101,6 +106,7 @@ describe('POST /api/v1.0.0/donation_item', () => {
 
   describe('when requested with name as an array', () => {
     const req = {
+      headers: { origin: `http://${DOMAIN}` },
       body: [
         {
           name: ['Shoes'],
